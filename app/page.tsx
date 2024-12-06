@@ -1,101 +1,311 @@
+"use client";
+
+import { useState, useEffect, useCallback, useRef } from "react";
+import {
+  Timer,
+  RotateCcw,
+  Plus,
+  ArrowDownToLine,
+  Share2,
+  ShoppingCart,
+  Settings,
+  Undo,
+  Redo,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 import Image from "next/image";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+const SCORE_SEQUENCE = ["00", "15", "30", "40", "AD"];
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+type ScoreState = {
+  team1: { set: number; game: number; score: string };
+  team2: { set: number; game: number; score: string };
+};
+
+export default function PadelScoreboard() {
+  const [time, setTime] = useState(0);
+  const [isRunning, setIsRunning] = useState(false);
+  const [scores, setScores] = useState<ScoreState>({
+    team1: { set: 0, game: 0, score: "00" },
+    team2: { set: 0, game: 0, score: "00" },
+  });
+  const [history, setHistory] = useState<ScoreState[]>([]);
+  const [future, setFuture] = useState<ScoreState[]>([]);
+  const [customTime, setCustomTime] = useState("");
+  const [popupMessage, setPopupMessage] = useState("");
+  const [isPopupOpen, setIsPopupOpen] = useState(false);
+  const timerRef = useRef<NodeJS.Timeout | null>(null);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60)
+      .toString()
+      .padStart(2, "0");
+    const secs = (seconds % 60).toString().padStart(2, "0");
+    return `${mins}:${secs}`;
+  };
+
+  useEffect(() => {
+    if (isRunning) {
+      timerRef.current = setInterval(() => {
+        setTime((prevTime) => prevTime + 1);
+      }, 1000);
+    } else if (timerRef.current) {
+      clearInterval(timerRef.current);
+    }
+    return () => {
+      if (timerRef.current) clearInterval(timerRef.current);
+    };
+  }, [isRunning]);
+
+  const toggleTimer = () => setIsRunning((prev) => !prev);
+
+  const resetTimer = () => {
+    setIsRunning(false);
+    setTime(0);
+  };
+
+  const setCustomTimer = () => {
+    const [minutes, seconds] = customTime.split(":").map(Number);
+    if (!isNaN(minutes) && !isNaN(seconds)) {
+      setTime(minutes * 60 + seconds);
+      setCustomTime("");
+    }
+  };
+
+  const updateScore = useCallback((team: "team1" | "team2") => {
+    setScores((prevScores) => {
+      setHistory((prev) => [...prev, prevScores]);
+      setFuture([]);
+
+      const otherTeam = team === "team1" ? "team2" : "team1";
+      const currentScore = prevScores[team].score;
+      const otherScore = prevScores[otherTeam].score;
+      let newScore =
+        SCORE_SEQUENCE[SCORE_SEQUENCE.indexOf(currentScore) + 1] || "00";
+      let newGame = prevScores[team].game;
+      let newSet = prevScores[team].set;
+
+      // Scoring Logic
+      if (currentScore === "40" && otherScore === "AD") {
+        return {
+          ...prevScores,
+          [otherTeam]: { ...prevScores[otherTeam], score: "40" },
+        };
+      } else if (currentScore === "40" && otherScore !== "40") {
+        newGame += 1;
+        newScore = "00";
+        if (newGame === 6) {
+          newSet += 1;
+          newGame = 0;
+        }
+      } else if (
+        currentScore === "AD" ||
+        (currentScore === "40" && otherScore === "40")
+      ) {
+        newGame += 1;
+        newScore = "00";
+        if (newGame === 6) {
+          newSet += 1;
+          newGame = 0;
+        }
+      }
+
+      const updatedScores = {
+        ...prevScores,
+        [team]: {
+          ...prevScores[team],
+          score: newScore,
+          game: newGame,
+          set: newSet,
+        },
+        [otherTeam]: { ...prevScores[otherTeam], score: "00" },
+      };
+
+      // Check for match result
+      if (updatedScores.team1.set === 2 || updatedScores.team2.set === 2) {
+        const winner = updatedScores.team1.set === 2 ? "Team 1" : "Team 2";
+        setPopupMessage(`Congratulations ${winner}, You Won!`);
+        setIsPopupOpen(true);
+      } else if (
+        updatedScores.team1.set === 1 &&
+        updatedScores.team2.set === 1
+      ) {
+        setPopupMessage("It's a Draw!");
+        setIsPopupOpen(true);
+      }
+
+      return updatedScores;
+    });
+  }, []);
+
+  const resetScores = () => {
+    setScores({
+      team1: { set: 0, game: 0, score: "00" },
+      team2: { set: 0, game: 0, score: "00" },
+    });
+    setHistory([]);
+    setFuture([]);
+    setIsPopupOpen(false);
+  };
+
+  const undo = () => {
+    if (history.length > 0) {
+      const prevState = history.pop()!;
+      setFuture((prev) => [scores, ...prev]);
+      setScores(prevState);
+    }
+  };
+
+  const redo = () => {
+    if (future.length > 0) {
+      const nextState = future.shift()!;
+      setHistory((prev) => [...prev, scores]);
+      setScores(nextState);
+    }
+  };
+
+  return (
+    <div className="min-h-screen flex  items-center bg-zinc-800 p-6">
+      <div className="w-full max-w-5xl mx-auto space-y-8">
+        <div className="space-y-4">
+          <Image 
+          className="w-full" 
+          alt="logo"
+          src={"/logo.png"} 
+          height={200} 
+          width={1000} 
+          />
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
+        {/* Timer */}
+        <div className="bg-zinc-900/50 rounded-lg p-4 text-4xl font-mono text-white text-center">
+          {formatTime(time)}
+        </div>
+
+        {/* Headers */}
+        <div className="grid grid-cols-4 gap-4 text-2xl text-gray-300 text-center">
+          <div></div>
+          <div>SET</div>
+          <div>GAME</div>
+          <div>SCORE</div>
+        </div>
+
+        {/* Team 1 */}
+        <div className="grid grid-cols-4 gap-4 items-center">
+          <div className="text-[#3498db] text-5xl font-extrabold">Team 1</div>
+          <div className="text-center  text-white  text-2xl">
+            {scores.team1.set}
+          </div>
+          <div className="text-center  text-white text-2xl">
+            {scores.team1.game}
+          </div>
+          <Button
+            className="bg-[#3498db] text-white text-5xl font-bold  w-full h-full rounded-lg p-4"
+            onClick={() => updateScore("team1")}
+          >
+            {scores.team1.score}
+          </Button>
+        </div>
+
+        {/* Team 2 */}
+        <div className="grid grid-cols-4 gap-4 items-center">
+          <div className="text-[#e74c3c] text-5xl font-extrabold">Team 2</div>
+          <div className="text-center text-white text-2xl">
+            {scores.team2.set}
+          </div>
+          <div className="text-center text-white text-2xl">
+            {scores.team2.game}
+          </div>
+          <Button
+            className="bg-[#e74c3c] text-white text-5xl font-bold  w-full h-full rounded-lg p-4"
+            onClick={() => updateScore("team2")}
+          >
+            {scores.team2.score}
+          </Button>
+        </div>
+
+        {/* Controls */}
+        <div className="flex justify-center gap-4 pt-4 flex-wrap">
+          <Button variant="ghost" size="icon" onClick={toggleTimer}>
+            {isRunning ? (
+              <RotateCcw className="w-6 h-6 text-gray-400" />
+            ) : (
+              <Plus className="w-6 h-6 text-gray-400" />
+            )}
+          </Button>
+          <Button variant="ghost" size="icon" onClick={resetTimer}>
+            <RotateCcw className="w-6 h-6 text-gray-400" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={resetScores}>
+            <ArrowDownToLine className="w-6 h-6 text-gray-400" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={undo}
+            disabled={history.length === 0}
+          >
+            <Undo className="w-6 h-6 text-gray-400" />
+          </Button>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={redo}
+            disabled={future.length === 0}
+          >
+            <Redo className="w-6 h-6 text-gray-400" />
+          </Button>
+          <Dialog>
+            <DialogTrigger asChild>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="flex items-center justify-center w-10 h-10 rounded-full  hover:bg-gray-200"
+              >
+                <Timer className="w-6 h-6 text-gray-400" />
+              </Button>
+            </DialogTrigger>
+            <DialogContent className="bg-zinc-900 rounded-lg shadow-lg p-6 max-w-md mx-auto">
+              <DialogHeader className="mb-4">
+                <DialogTitle className="text-lg font-semibold text-gray-100">
+                  Set Custom Timer
+                </DialogTitle>
+              </DialogHeader>
+              <div className="grid gap-4">
+                <Input
+                  id="custom-time"
+                  placeholder="MM:SS"
+                  value={customTime}
+                  onChange={(e) => setCustomTime(e.target.value)}
+                  className="w-full px-4 py-2  rounded-md focus:ring text-gray-100"
+                />
+                <Button
+                  onClick={setCustomTimer}
+                  className="w-full bg-blue-600 text-white py-2 rounded-md hover:bg-blue-500 focus:ring focus:ring-blue-300"
+                >
+                  Set
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
+        </div>
+        {/* Popup */}
+        <Dialog open={isPopupOpen} onOpenChange={setIsPopupOpen}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>{popupMessage}</DialogTitle>
+            </DialogHeader>
+            <Button onClick={() => setIsPopupOpen(false)}>Close</Button>
+          </DialogContent>
+        </Dialog>
+      </div>
     </div>
   );
 }
