@@ -7,6 +7,10 @@ import {
   Redo,
   RefreshCcw,
   ChartAreaIcon,
+  Play,
+  StopCircleIcon,
+  Pause,
+  TimerReset,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -85,6 +89,19 @@ export default function PadelScoreboard() {
       setTime(minutes * 60 + seconds); // Set the custom time
       setCustomTime("");
     }
+  };
+
+  const startTimer = () => {
+    setIsRunning(true);
+  };
+
+  const stopTimer = () => {
+    setIsRunning(false);
+  };
+
+  const resetTimer = () => {
+    setIsRunning(false);
+    setTime(0);
   };
 
   const updateScore = useCallback(
@@ -207,12 +224,12 @@ export default function PadelScoreboard() {
           />
         </div>
         {/* Timer */}
-        <div className="bg-zinc-900/50 rounded-lg p-4 text-4xl font-mono text-white text-center">
+        <div className="bg-zinc-900/50 rounded-lg p-4 text-4xl font-mono text-white text-center sm:text-2xl">
           {formatTime(time)}
         </div>
 
         {/* Headers */}
-        <div className="grid grid-cols-4 gap-4 text-2xl text-gray-300 text-center">
+        <div className="grid grid-cols-4 gap-4 text-2xl text-gray-300 text-center sm:text-xl">
           <div></div>
           <div>SET</div>
           <div>GAME</div>
@@ -221,11 +238,11 @@ export default function PadelScoreboard() {
 
         {/* Team 1 */}
         <div className="grid grid-cols-4 gap-4 items-center">
-          <div className="text-[#3498db] text-5xl font-extrabold">Team 1</div>
-          <div className="text-center  text-white  text-2xl">{team1.set}</div>
-          <div className="text-center  text-white text-2xl">{team1.game}</div>
+          <div className="text-[#3498db] text-5xl font-extrabold sm:text-3xl">Team 1</div>
+          <div className="text-center  text-white  text-2xl sm:text-xl">{team1.set}</div>
+          <div className="text-center  text-white text-2xl sm:text-xl">{team1.game}</div>
           <Button
-            className={`bg-[#3498db] text-white text-5xl font-bold  w-full h-full rounded-lg p-4`}
+            className={`bg-[#3498db] text-white text-5xl font-bold  w-full h-full rounded-lg p-4 sm:text-3xl`}
             onClick={() => updateScore("team1")}
             disabled={isMatchWon}
           >
@@ -235,11 +252,11 @@ export default function PadelScoreboard() {
 
         {/* Team 2 */}
         <div className="grid grid-cols-4 gap-4 items-center">
-          <div className="text-[#e74c3c] text-5xl font-extrabold">Team 2</div>
-          <div className="text-center text-white text-2xl">{team2.set}</div>
-          <div className="text-center text-white text-2xl">{team2.game}</div>
+          <div className="text-[#e74c3c] text-5xl font-extrabold sm:text-3xl">Team 2</div>
+          <div className="text-center text-white text-2xl sm:text-xl">{team2.set}</div>
+          <div className="text-center text-white text-2xl sm:text-xl">{team2.game}</div>
           <Button
-            className={`bg-[#e74c3c] text-white text-5xl font-bold  w-full h-full rounded-lg p-4`}
+            className={`bg-[#e74c3c] text-white text-5xl font-bold  w-full h-full rounded-lg p-4 sm:text-3xl`}
             onClick={() => updateScore("team2")}
             disabled={isMatchWon}
           >
@@ -260,7 +277,14 @@ export default function PadelScoreboard() {
           ) : (
             ""
           )}
-          <Button variant="ghost" size="icon" onClick={()=>{ resetScores();}}>
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              resetScores();
+              resetTimer();
+            }}
+          >
             <RefreshCcw className="w-6 h-6 text-gray-400" />
           </Button>
           <Button
@@ -281,6 +305,15 @@ export default function PadelScoreboard() {
           </Button>
           <Button variant="ghost" size="icon" onClick={downloadCSV}>
             <ArrowDownToLine className="w-6 h-6 text-gray-400" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={startTimer}>
+            <Play className="w-6 h-6 text-gray-400" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={stopTimer}>
+            <Pause className="w-6 h-6 text-gray-400" />
+          </Button>
+          <Button variant="ghost" size="icon" onClick={resetTimer}>
+            <TimerReset className="w-6 h-6 text-gray-400" />
           </Button>
           <Dialog>
             <DialogTrigger asChild>
@@ -352,6 +385,7 @@ export default function PadelScoreboard() {
               onClick={() => {
                 setIsPopupOpen(false);
                 resetScores();
+                resetTimer();
               }}
             >
               Close
