@@ -12,6 +12,7 @@ import {
   TimerReset,
   UserPen,
   Trophy,
+  ChartBarBig,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -100,21 +101,6 @@ export default function PadelScoreboard() {
   useEffect(() => {
     console.log(`Timer: ${formatTime(time)}`);
   }, [time]);
-
-  useEffect(() => {
-    const handleOrientationChange = () => {
-      if (window.innerWidth < 768) {
-        alert("For the best experience, please use landscape mode.");
-      }
-    };
-
-    window.addEventListener("resize", handleOrientationChange);
-    handleOrientationChange();
-
-    return () => {
-      window.removeEventListener("resize", handleOrientationChange);
-    };
-  }, []);
 
   const setCustomTimer = () => {
     const minutes = parseInt(customMinutes, 10);
@@ -261,8 +247,18 @@ export default function PadelScoreboard() {
   // Download as CSV functionality
   const downloadCSV = () => {
     const rows = [
-      ["Team 1", "Sets", "Games", "Score", "Team 2", "Sets", "Games", "Score", "Match Time"],
-      ...allPreviousStats.map(stat => [
+      [
+        "Team 1",
+        "Sets",
+        "Games",
+        "Score",
+        "Team 2",
+        "Sets",
+        "Games",
+        "Score",
+        "Match Time",
+      ],
+      ...allPreviousStats.map((stat) => [
         stat.team1.name,
         stat.team1.set,
         stat.team1.game,
@@ -272,7 +268,7 @@ export default function PadelScoreboard() {
         stat.team2.game,
         stat.team2.score,
         stat.matchTime,
-      ])
+      ]),
     ];
 
     let csvContent = "data:text/csv;charset=utf-8,";
@@ -335,7 +331,7 @@ export default function PadelScoreboard() {
                 <Timer className="w-6 h-6 text-gray-400" />
               </Button>
             </DialogTrigger>
-            <DialogContent className="bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-6 max-w-md mx-auto">
+            <DialogContent className="bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-6 max-w-md mx-auto sm:max-w-xs">
               <DialogHeader className="mb-4 text-white">
                 <DialogTitle className="text-lg font-semibold text-gray-100">
                   Set Custom Timer
@@ -370,7 +366,7 @@ export default function PadelScoreboard() {
           </Dialog>
         </div>
         {/* Headers */}
-        <div className="grid grid-cols-4 gap-4 text-2xl text-gray-300 text-center sm:text-xl">
+        <div className="grid grid-cols-4 gap-4 text-base text-gray-300 text-center sm:text-xl">
           <div></div>
           <div>SET</div>
           <div>GAME</div>
@@ -379,17 +375,17 @@ export default function PadelScoreboard() {
 
         {/* Team 1 */}
         <div className="grid grid-cols-4 gap-4 items-center">
-          <div className="text-[#3498db] text-5xl font-extrabold sm:text-3xl whitespace-nowrap">
+          <div className="text-[#3498db] text-2xl font-extrabold sm:text-3xl whitespace-nowrap">
             {team1Name}
           </div>
-          <div className="text-center  text-white  text-2xl sm:text-xl">
+          <div className="text-center  text-white  text-xl sm:text-3xl">
             {team1.set}
           </div>
-          <div className="text-center  text-white text-2xl sm:text-xl">
+          <div className="text-center  text-white text-xl sm:text-3xl">
             {team1.game}
           </div>
           <Button
-            className={`bg-[#3498db] text-white text-5xl font-bold  w-full h-full rounded-lg p-4 sm:text-3xl`}
+            className={`bg-[#3498db] text-white text-2xl font-bold  w-full h-full rounded-lg p-4 sm:text-3xl`}
             onClick={() => updateScore("team1")}
             disabled={isMatchWon}
           >
@@ -399,17 +395,17 @@ export default function PadelScoreboard() {
 
         {/* Team 2 */}
         <div className="grid grid-cols-4 gap-4 items-center">
-          <div className="text-[#e74c3c] text-5xl font-extrabold sm:text-3xl  whitespace-nowrap">
+          <div className="text-[#e74c3c] text-2xl font-extrabold sm:text-3xl  whitespace-nowrap">
             {team2Name}
           </div>
-          <div className="text-center text-white text-2xl sm:text-xl">
+          <div className="text-center text-white text-xl sm:text-3xl">
             {team2.set}
           </div>
-          <div className="text-center text-white text-2xl sm:text-xl">
+          <div className="text-center text-white text-xl sm:text-3xl">
             {team2.game}
           </div>
           <Button
-            className={`bg-[#e74c3c] text-white text-5xl font-bold  w-full h-full rounded-lg p-4 sm:text-3xl`}
+            className={`bg-[#e74c3c] text-white text-2xl font-bold  w-full h-full rounded-lg p-4 sm:text-3xl`}
             onClick={() => updateScore("team2")}
             disabled={isMatchWon}
           >
@@ -425,12 +421,10 @@ export default function PadelScoreboard() {
               size="icon"
               onClick={() => setIsPopupOpen(true)}
             >
-              <ChartAreaIcon className="w-6 h-6 text-gray-400" />
+              <Trophy className="w-6 h-6 text-gray-400" />
             </Button>
           ) : (
-            ""
-          )}
-          <Button
+            <Button
             variant="ghost"
             size="icon"
             onClick={() => {
@@ -440,6 +434,8 @@ export default function PadelScoreboard() {
           >
             <RefreshCcw className="w-6 h-6 text-gray-400" />
           </Button>
+          )}
+         
           <Button
             variant="ghost"
             size="icon"
@@ -469,10 +465,10 @@ export default function PadelScoreboard() {
             size="icon"
             onClick={() => setIsStatsDialogOpen(true)}
           >
-            <ChartAreaIcon className="w-6 h-6 text-gray-400" />
+            <ChartBarBig className="w-6 h-6 text-gray-400" />
           </Button>
           <Dialog open={isNameDialogOpen} onOpenChange={setIsNameDialogOpen}>
-            <DialogContent className="bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-6 max-w-md mx-auto">
+            <DialogContent className="bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-6 max-w-md mx-auto sm:max-w-xs">
               <DialogHeader className="mb-4">
                 <DialogTitle className="text-lg font-semibold text-gray-100">
                   Set Team Names
@@ -503,16 +499,16 @@ export default function PadelScoreboard() {
             </DialogContent>
           </Dialog>
           <Dialog open={isStatsDialogOpen} onOpenChange={setIsStatsDialogOpen}>
-            <DialogContent className="sm:max-w-[900px] bg-zinc-900 border border-zinc-700 rounded-xl shadow-2xl">
+            <DialogContent className="bg-zinc-900 border border-zinc-700 rounded-xl w-full max-w-3xl">
               <DialogHeader className="mb-6">
                 <DialogTitle className="text-3xl font-bold text-blue-400 text-center">
                   Match History
                 </DialogTitle>
-                <Button variant="ghost" size="icon" onClick={downloadCSV}>
-            <ArrowDownToLine className="w-6 h-6 text-gray-400" />
-          </Button>
+                <Button variant="ghost" size="icon" onClick={downloadCSV} className="ml-auto">
+                  <ArrowDownToLine className="w-6 h-6 text-gray-400" />
+                </Button>
               </DialogHeader>
-              <ScrollArea className="rounded-md">
+              <ScrollArea className="rounded-md  w-full">
                 <Table>
                   <TableHeader>
                     <TableRow className="bg-zinc-800">
@@ -591,7 +587,7 @@ export default function PadelScoreboard() {
 
         {/* Popup */}
         <Dialog open={isPopupOpen} onOpenChange={setIsPopupOpen}>
-          <DialogContent className="sm:max-w-[425px] bg-zinc-900 text-zinc-100 border-zinc-700 border">
+          <DialogContent className="bg-zinc-900 text-zinc-100 border-zinc-700 border">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-blue-400 flex items-center justify-center">
                 <Trophy className="w-6 h-6 mr-2 text-yellow-400" />
@@ -629,7 +625,7 @@ export default function PadelScoreboard() {
                   resetScores();
                   resetTimer();
                 }}
-                className="w-full mt-4 bg-blue-600 hover:bg-blue-700 text-white"
+                className="w-full mt-4 bg-blue-500 hover:bg-blue-400 text-white"
               >
                 Close and Reset
               </Button>
