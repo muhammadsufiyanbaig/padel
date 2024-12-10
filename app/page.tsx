@@ -6,7 +6,6 @@ import {
   Undo,
   Redo,
   RefreshCcw,
-  ChartAreaIcon,
   Play,
   Pause,
   TimerReset,
@@ -425,17 +424,17 @@ export default function PadelScoreboard() {
             </Button>
           ) : (
             <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => {
-              resetScores();
-              resetTimer();
-            }}
-          >
-            <RefreshCcw className="w-6 h-6 text-gray-400" />
-          </Button>
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                resetScores();
+                resetTimer();
+              }}
+            >
+              <RefreshCcw className="w-6 h-6 text-gray-400" />
+            </Button>
           )}
-         
+
           <Button
             variant="ghost"
             size="icon"
@@ -504,15 +503,20 @@ export default function PadelScoreboard() {
                 <DialogTitle className="text-3xl font-bold text-blue-400 text-center">
                   Match History
                 </DialogTitle>
-                <Button variant="ghost" size="icon" onClick={downloadCSV} className="ml-auto">
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={downloadCSV}
+                  className="ml-auto"
+                >
                   <ArrowDownToLine className="w-6 h-6 text-gray-400" />
                 </Button>
               </DialogHeader>
-              <ScrollArea className="rounded-md  w-full">
-                <Table>
+              <ScrollArea className="rounded-md w-full overflow-x-auto">
+                <Table className="">
                   <TableHeader>
                     <TableRow className="bg-zinc-800">
-                      <TableHead className="text-zinc-300">Team 1</TableHead>
+                      <TableHead className="text-zinc-300 text-right">Team 1</TableHead>
                       <TableHead className="text-zinc-300 text-right">
                         Sets
                       </TableHead>
@@ -522,7 +526,7 @@ export default function PadelScoreboard() {
                       <TableHead className="text-zinc-300 text-right">
                         Score
                       </TableHead>
-                      <TableHead className="text-zinc-300">Team 2</TableHead>
+                      <TableHead className="text-zinc-300 text-right">Team 2</TableHead>
                       <TableHead className="text-zinc-300 text-right">
                         Sets
                       </TableHead>
@@ -532,7 +536,7 @@ export default function PadelScoreboard() {
                       <TableHead className="text-zinc-300 text-right">
                         Score
                       </TableHead>
-                      <TableHead className="text-zinc-300">
+                      <TableHead className="text-zinc-300 text-right">
                         Match Time
                       </TableHead>
                     </TableRow>
@@ -541,9 +545,9 @@ export default function PadelScoreboard() {
                     {allPreviousStats.map((stat, index) => (
                       <TableRow
                         key={index}
-                        className="border-b border-zinc-700"
+                        className="border-b border-zinc-700 text-right"
                       >
-                        <TableCell className="font-medium text-zinc-300">
+                        <TableCell className="font-medium text-right text-zinc-300 ">
                           {stat.team1.name}
                         </TableCell>
                         <TableCell className="text-right text-zinc-300">
