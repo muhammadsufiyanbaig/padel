@@ -189,6 +189,9 @@ export default function PadelScoreboard() {
           newGame = 0;
         }
         setOtherTeam({ ...otherTeam, score: "00" });
+      } else if (currentScore === "AD" && otherScore === "40") {
+        newScore = "40";
+        setOtherTeam({ ...otherTeam, score: "40" });
       }
 
       if (newSet === 2) {
