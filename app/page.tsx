@@ -169,14 +169,23 @@ export default function PadelScoreboard() {
       let newSet = currentTeam.set;
 
       // Scoring Logic
-      if (currentScore === "40" && otherScore === "AD") {
+      if (currentScore === "AD" && otherScore === "40") {
+        newGame += 1;
+        newScore = "00";
+        if (newGame >= 6 && newGame - otherTeam.game >= 2) {
+          newSet += 1;
+          newGame = 0;
+        }
+        setOtherTeam({ ...otherTeam, score: "00" });
+      } else if (currentScore === "40" && otherScore === "AD") {
+        newScore = "40";
         setOtherTeam({ ...otherTeam, score: "40" });
       } else if (currentScore === "40" && otherScore === "40") {
         newScore = "AD";
       } else if (currentScore === "AD") {
         newGame += 1;
         newScore = "00";
-        if (newGame === 6) {
+        if (newGame >= 6 && newGame - otherTeam.game >= 2) {
           newSet += 1;
           newGame = 0;
         }
@@ -184,17 +193,14 @@ export default function PadelScoreboard() {
       } else if (currentScore === "40" && otherScore !== "40") {
         newGame += 1;
         newScore = "00";
-        if (newGame === 6) {
+        if (newGame >= 6 && newGame - otherTeam.game >= 2) {
           newSet += 1;
           newGame = 0;
         }
         setOtherTeam({ ...otherTeam, score: "00" });
-      } else if (currentScore === "AD" && otherScore === "40") {
-        newScore = "40";
-        setOtherTeam({ ...otherTeam, score: "40" });
       }
 
-      if (newSet === 2) {
+      if (newSet >= 2) {
         // Assuming 2 sets to win
         setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
         setWinningTeamStats({
