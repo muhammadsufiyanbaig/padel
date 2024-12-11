@@ -12,6 +12,7 @@ import {
   UserPen,
   Trophy,
   ChartBarBig,
+  Trash,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -170,7 +171,9 @@ export default function PadelScoreboard() {
       // Scoring Logic
       if (currentScore === "40" && otherScore === "AD") {
         setOtherTeam({ ...otherTeam, score: "40" });
-      } else if (currentScore === "40" && otherScore !== "40") {
+      } else if (currentScore === "40" && otherScore === "40") {
+        newScore = "AD";
+      } else if (currentScore === "AD") {
         newGame += 1;
         newScore = "00";
         if (newGame === 6) {
@@ -178,10 +181,7 @@ export default function PadelScoreboard() {
           newGame = 0;
         }
         setOtherTeam({ ...otherTeam, score: "00" });
-      } else if (
-        currentScore === "AD" ||
-        (currentScore === "40" && otherScore === "40")
-      ) {
+      } else if (currentScore === "40" && otherScore !== "40") {
         newGame += 1;
         newScore = "00";
         if (newGame === 6) {
@@ -281,6 +281,11 @@ export default function PadelScoreboard() {
     link.setAttribute("download", "match_history.csv");
     document.body.appendChild(link);
     link.click();
+  };
+
+  const clearMatchHistory = () => {
+    localStorage.removeItem("allPreviousStats");
+    setAllPreviousStats([]);
   };
 
   useEffect(() => {
@@ -503,14 +508,24 @@ export default function PadelScoreboard() {
                 <DialogTitle className="text-3xl font-bold text-blue-400 text-center">
                   Match History
                 </DialogTitle>
+                <div className="flex justify-between items-center">
                 <Button
                   variant="ghost"
                   size="icon"
                   onClick={downloadCSV}
-                  className="ml-auto"
+                  className=""
                 >
                   <ArrowDownToLine className="w-6 h-6 text-gray-400" />
                 </Button>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  onClick={clearMatchHistory}
+                  className=""
+                >
+                  <Trash className="w-6 h-6 text-gray-400 hover:text-red-700" />
+                </Button>
+                </div>
               </DialogHeader>
               <ScrollArea className="rounded-md w-full overflow-x-auto">
                 <Table className="">
