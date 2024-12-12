@@ -38,15 +38,15 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 const SCORE_SEQUENCE = ["00", "15", "30", "40", "AD"];
 
 type ScoreState = {
-  team1: { set: number; game: number; score: string };
-  team2: { set: number; game: number; score: string };
+  team1: { set1: number; set2: number; set3: number; game: number; score: string };
+  team2: { set1: number; set2: number; set3: number; game: number; score: string };
 };
 
 export default function PadelScoreboard() {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [team1, setTeam1] = useState({ set: 0, game: 0, score: "00" });
-  const [team2, setTeam2] = useState({ set: 0, game: 0, score: "00" });
+  const [team1, setTeam1] = useState({ set1: 0, set2: 0, set3: 0, game: 0, score: "00" });
+  const [team2, setTeam2] = useState({ set1: 0, set2: 0, set3: 0, game: 0, score: "00" });
   const [history, setHistory] = useState<
     { team1: ScoreState["team1"]; team2: ScoreState["team2"] }[]
   >([]);
@@ -67,6 +67,9 @@ export default function PadelScoreboard() {
   const [isNameDialogOpen, setIsNameDialogOpen] = useState(false);
   const [allPreviousStats, setAllPreviousStats] = useState<any[]>([]);
   const [isStatsDialogOpen, setIsStatsDialogOpen] = useState(false);
+  const [setTimeDurations, setSetTimeDurations] = useState([0, 0, 0]);
+  const [currentSet, setCurrentSet] = useState(1);
+  const [fullMatchTime, setFullMatchTime] = useState(0);
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -76,27 +79,33 @@ export default function PadelScoreboard() {
     return `${mins}:${secs}`;
   };
 
-  useEffect(() => {
-    if (isRunning) {
-      if (!timerRef.current) {
-        timerRef.current = setInterval(() => {
-          setTime((prevTime) => prevTime + 1);
-        }, 1000);
-      }
-    } else {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
+// ...existing code...
+useEffect(() => {
+  if (isRunning && !isMatchWon) {
+    if (!timerRef.current) {
+      timerRef.current = setInterval(() => {
+        setTime((prevTime) => prevTime + 1);
+        setFullMatchTime((prevTime) => prevTime + 1);
+        if (currentSet === 3) {
+          setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + 1]);
+        }
+      }, 1000);
     }
+  } else {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  }
 
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    };
-  }, [isRunning]);
+  return () => {
+    if (timerRef.current) {
+      clearInterval(timerRef.current);
+      timerRef.current = null;
+    }
+  };
+}, [isRunning, isMatchWon, currentSet]);
+// ...existing code...
 
   useEffect(() => {
     console.log(`Timer: ${formatTime(time)}`);
@@ -132,7 +141,8 @@ export default function PadelScoreboard() {
     const matchStats = {
       team1: { ...team1Stats, name: team1Name },
       team2: { ...team2Stats, name: team2Name },
-      matchTime: formatTime(time),
+      matchTime: formatTime(fullMatchTime), // Use full match time
+      setTimes: setTimeDurations.map(formatTime),
     };
     const existingStats = JSON.parse(
       localStorage.getItem("allPreviousStats") || "[]"
@@ -166,15 +176,64 @@ export default function PadelScoreboard() {
       let newScore =
         SCORE_SEQUENCE[SCORE_SEQUENCE.indexOf(currentScore) + 1] || "00";
       let newGame = currentTeam.game;
-      let newSet = currentTeam.set;
+      let newSet1 = currentTeam.set1;
+      let newSet2 = currentTeam.set2;
+      let newSet3 = currentTeam.set3;
 
       // Scoring Logic
       if (currentScore === "AD" && otherScore === "40") {
         newGame += 1;
         newScore = "00";
         if (newGame >= 6 && newGame - otherTeam.game >= 2) {
-          newSet += 1;
+          if (currentSet === 1) {
+            newSet1 += 1;
+            if (newSet1 === 2 || newSet2 === 2) {
+              setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
+              setWinningTeamStats({
+                ...currentTeam,
+                set1: newSet1,
+                set2: newSet2,
+                set3: newSet3,
+                game: newGame,
+                score: newScore,
+              });
+              setIsPopupOpen(true);
+              setIsMatchWon(true);
+              saveMatchStats(team1, team2);
+              logMatchStats(team1, team2);
+              return;
+            }
+            setCurrentSet(2);
+            setSetTimeDurations((prev) => [prev[0] + time, prev[1], prev[2]]);
+          } else if (currentSet === 2) {
+            newSet2 += 1;
+            if (newSet1 === 2 || newSet2 === 2) {
+              setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
+              setWinningTeamStats({
+                ...currentTeam,
+                set1: newSet1,
+                set2: newSet2,
+                set3: newSet3,
+                game: newGame,
+                score: newScore,
+              });
+              setIsPopupOpen(true);
+              setIsMatchWon(true);
+              saveMatchStats(team1, team2);
+              logMatchStats(team1, team2);
+              return;
+            }
+            setCurrentSet(3);
+            setSetTimeDurations((prev) => [prev[0], prev[1] + time, prev[2]]);
+          } else if (currentSet === 3) {
+            newSet3 += 1;
+            setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + time]);
+            if (newSet3 === 2) {
+              setIsRunning(false); // Stop the timer when set3 = 2
+            }
+          }
           newGame = 0;
+          setTime(0); // Reset timer for the new set
         }
         setOtherTeam({ ...otherTeam, score: "00" });
       } else if (currentScore === "40" && otherScore === "AD") {
@@ -186,26 +245,126 @@ export default function PadelScoreboard() {
         newGame += 1;
         newScore = "00";
         if (newGame >= 6 && newGame - otherTeam.game >= 2) {
-          newSet += 1;
+          if (currentSet === 1) {
+            newSet1 += 1;
+            if (newSet1 === 2 || newSet2 === 2) {
+              setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
+              setWinningTeamStats({
+                ...currentTeam,
+                set1: newSet1,
+                set2: newSet2,
+                set3: newSet3,
+                game: newGame,
+                score: newScore,
+              });
+              setIsPopupOpen(true);
+              setIsMatchWon(true);
+              saveMatchStats(team1, team2);
+              logMatchStats(team1, team2);
+              return;
+            }
+            setCurrentSet(2);
+            setSetTimeDurations((prev) => [prev[0] + time, prev[1], prev[2]]);
+          } else if (currentSet === 2) {
+            newSet2 += 1;
+            if (newSet1 === 2 || newSet2 === 2) {
+              setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
+              setWinningTeamStats({
+                ...currentTeam,
+                set1: newSet1,
+                set2: newSet2,
+                set3: newSet3,
+                game: newGame,
+                score: newScore,
+              });
+              setIsPopupOpen(true);
+              setIsMatchWon(true);
+              saveMatchStats(team1, team2);
+              logMatchStats(team1, team2);
+              return;
+            }
+            setCurrentSet(3);
+            setSetTimeDurations((prev) => [prev[0], prev[1] + time, prev[2]]);
+          } else if (currentSet === 3) {
+            newSet3 += 1;
+            setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + time]);
+            if (newSet3 === 2) {
+              setIsRunning(false); // Stop the timer when set3 = 2
+            }
+          }
           newGame = 0;
+          setTime(0); // Reset timer for the new set
         }
         setOtherTeam({ ...otherTeam, score: "00" });
       } else if (currentScore === "40" && otherScore !== "40") {
         newGame += 1;
         newScore = "00";
         if (newGame >= 6 && newGame - otherTeam.game >= 2) {
-          newSet += 1;
+          if (currentSet === 1) {
+            newSet1 += 1;
+            if (newSet1 === 2 || newSet2 === 2) {
+              setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
+              setWinningTeamStats({
+                ...currentTeam,
+                set1: newSet1,
+                set2: newSet2,
+                set3: newSet3,
+                game: newGame,
+                score: newScore,
+              });
+              setIsPopupOpen(true);
+              setIsMatchWon(true);
+              saveMatchStats(team1, team2);
+              logMatchStats(team1, team2);
+              return;
+            }
+            setCurrentSet(2);
+            setSetTimeDurations((prev) => [prev[0] + time, prev[1], prev[2]]);
+          } else if (currentSet === 2) {
+            newSet2 += 1;
+            if (newSet1 === 2 || newSet2 === 2) {
+              setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
+              setWinningTeamStats({
+                ...currentTeam,
+                set1: newSet1,
+                set2: newSet2,
+                set3: newSet3,
+                game: newGame,
+                score: newScore,
+              });
+              setIsPopupOpen(true);
+              setIsMatchWon(true);
+              saveMatchStats(team1, team2);
+              logMatchStats(team1, team2);
+              return;
+            }
+            setCurrentSet(3);
+            setSetTimeDurations((prev) => [prev[0], prev[1] + time, prev[2]]);
+          } else if (currentSet === 3) {
+            newSet3 += 1;
+            setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + time]);
+            if (newSet3 === 2) {
+              setIsRunning(false); // Stop the timer when set3 = 2
+            }
+          }
           newGame = 0;
+          setTime(0); // Reset timer for the new set
         }
         setOtherTeam({ ...otherTeam, score: "00" });
       }
 
-      if (newSet >= 2) {
-        // Assuming 2 sets to win
+      if (
+        (newSet1 >= 2 || newSet2 >= 2 || newSet3 >= 2) &&
+        (team1.set1 + team1.set2 + team1.set3 >= 2 || team2.set1 + team2.set2 + team2.set3 >= 2) ||
+        (team1.set1 + team1.set2 >= 2 || team2.set1 + team2.set2 >= 2) ||
+        (team1.set1 + team2.set1 === 1 && team1.set2 + team2.set2 === 1 && newSet3 === 2)
+      ) {
         setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
         setWinningTeamStats({
           ...currentTeam,
-          set: newSet,
+          set1: newSet1,
+          set2: newSet2,
+          set3: newSet3,
           game: newGame,
           score: newScore,
         });
@@ -219,19 +378,23 @@ export default function PadelScoreboard() {
         ...currentTeam,
         score: newScore,
         game: newGame,
-        set: newSet,
+        set1: newSet1,
+        set2: newSet2,
+        set3: newSet3,
       });
     },
-    [team1, team2]
+    [team1, team2, currentSet, time]
   );
 
   const resetScores = () => {
-    setTeam1({ set: 0, game: 0, score: "00" });
-    setTeam2({ set: 0, game: 0, score: "00" });
+    setTeam1({ set1: 0, set2: 0, set3: 0, game: 0, score: "00" });
+    setTeam2({ set1: 0, set2: 0, set3: 0, game: 0, score: "00" });
     setHistory([]);
     setFuture([]);
     setIsPopupOpen(false);
     setIsMatchWon(false);
+    setCurrentSet(1);
+    setSetTimeDurations([0, 0, 0]);
   };
 
   const undo = () => {
@@ -320,9 +483,9 @@ export default function PadelScoreboard() {
             width={1000}
           />
         </div>
-        {/* Timer */}
+        {/* Full Match Timer */}
         <div className="bg-zinc-900/50 rounded-lg p-4 text-4xl font-mono text-white text-center sm:text-2xl">
-          {formatTime(time)}
+          {formatTime(fullMatchTime)}
         </div>
         <div className="flex justify-center gap-x-4 pb-4">
           <Button variant="ghost" size="icon" onClick={startTimer}>
@@ -379,22 +542,30 @@ export default function PadelScoreboard() {
           </Dialog>
         </div>
         {/* Headers */}
-        <div className="grid grid-cols-4 gap-4 text-base text-gray-300 text-center sm:text-xl">
+        <div className="grid grid-cols-6 gap-4 text-base text-gray-300 text-center sm:text-xl">
           <div></div>
-          <div>SET</div>
+          <div>SET 1</div>
+          <div>SET 2</div>
+          <div>SET 3</div>
           <div>GAME</div>
           <div>SCORE</div>
         </div>
 
         {/* Team 1 */}
-        <div className="grid grid-cols-4 gap-4 items-center">
+        <div className="grid grid-cols-6 gap-4 items-center">
           <div className="text-[#3498db] text-2xl font-extrabold sm:text-3xl whitespace-nowrap">
             {team1Name}
           </div>
           <div className="text-center  text-white  text-xl sm:text-3xl">
-            {team1.set}
+            {team1.set1}
           </div>
-          <div className="text-center  text-white text-xl sm:text-3xl">
+          <div className="text-center  text-white  text-xl sm:text-3xl">
+            {team1.set2}
+          </div>
+          <div className="text-center  text-white  text-xl sm:text-3xl">
+            {team1.set3}
+          </div>
+          <div className="text-center  text-white  text-xl sm:text-3xl">
             {team1.game}
           </div>
           <Button
@@ -407,12 +578,18 @@ export default function PadelScoreboard() {
         </div>
 
         {/* Team 2 */}
-        <div className="grid grid-cols-4 gap-4 items-center">
+        <div className="grid grid-cols-6 gap-4 items-center">
           <div className="text-[#e74c3c] text-2xl font-extrabold sm:text-3xl  whitespace-nowrap">
             {team2Name}
           </div>
           <div className="text-center text-white text-xl sm:text-3xl">
-            {team2.set}
+            {team2.set1}
+          </div>
+          <div className="text-center text-white text-xl sm:text-3xl">
+            {team2.set2}
+          </div>
+          <div className="text-center text-white text-xl sm:text-3xl">
+            {team2.set3}
           </div>
           <div className="text-center text-white text-xl sm:text-3xl">
             {team2.game}
@@ -424,6 +601,21 @@ export default function PadelScoreboard() {
           >
             {team2.score}
           </Button>
+        </div>
+        {/* Duration */}
+<div className="grid grid-cols-6 gap-4 items-center">
+          <div className="text-[#91989c] text-2xl font-extrabold sm:text-3xl  whitespace-nowrap">
+            Duration
+          </div>
+          <div className="text-center text-white text-lg sm:text-3xl">
+          {formatTime(setTimeDurations[0])} {/* Set 1 Duration */}
+          </div>
+          <div className="text-center text-white text-lg sm:text-3xl">
+          {formatTime(setTimeDurations[1])} {/* Set 2 Duration */}
+          </div>
+          <div className="text-center text-white text-lg sm:text-3xl">
+          {formatTime(setTimeDurations[2])} {/* Set 3 Duration */}
+          </div>
         </div>
 
         {/* Controls */}
@@ -626,9 +818,21 @@ export default function PadelScoreboard() {
               <div className="mt-4">
                 <div className="grid grid-cols-3 gap-4 text-center">
                   <div className="bg-zinc-800 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-zinc-400">Sets</h3>
+                    <h3 className="text-sm font-medium text-zinc-400">Set1</h3>
                     <p className="text-2xl font-bold text-blue-400">
-                      {winningTeamStats.set}
+                      {winningTeamStats.set1}
+                    </p>
+                  </div>
+                  <div className="bg-zinc-800 p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-zinc-400">Set2</h3>
+                    <p className="text-2xl font-bold text-blue-400">
+                      {winningTeamStats.set2}
+                    </p>
+                  </div>
+                  <div className="bg-zinc-800 p-4 rounded-lg">
+                    <h3 className="text-sm font-medium text-zinc-400">Set3</h3>
+                    <p className="text-2xl font-bold text-blue-400">
+                      {winningTeamStats.set3}
                     </p>
                   </div>
                   <div className="bg-zinc-800 p-4 rounded-lg">
