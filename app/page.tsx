@@ -70,6 +70,8 @@ export default function PadelScoreboard() {
   const [setTimeDurations, setSetTimeDurations] = useState([0, 0, 0]);
   const [currentSet, setCurrentSet] = useState(1);
   const [fullMatchTime, setFullMatchTime] = useState(0);
+  const [lastScores, setLastScores] = useState<{ set1: string; set2: string; set3: string }>({ set1: "00", set2: "00", set3: "00" });
+  const [lastGameScore, setLastGameScore] = useState<string>("00");
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -187,6 +189,8 @@ useEffect(() => {
         if (newGame >= 6 && newGame - otherTeam.game >= 2) {
           if (currentSet === 1) {
             newSet1 += 1;
+            setLastScores((prev) => ({ ...prev, set1: newScore }));
+            setLastGameScore(newScore);
             if (newSet1 === 2 || newSet2 === 2) {
               setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
               setWinningTeamStats({
@@ -207,6 +211,8 @@ useEffect(() => {
             setSetTimeDurations((prev) => [prev[0] + time, prev[1], prev[2]]);
           } else if (currentSet === 2) {
             newSet2 += 1;
+            setLastScores((prev) => ({ ...prev, set2: newScore }));
+            setLastGameScore(newScore);
             if (newSet1 === 2 || newSet2 === 2) {
               setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
               setWinningTeamStats({
@@ -227,6 +233,8 @@ useEffect(() => {
             setSetTimeDurations((prev) => [prev[0], prev[1] + time, prev[2]]);
           } else if (currentSet === 3) {
             newSet3 += 1;
+            setLastScores((prev) => ({ ...prev, set3: newScore }));
+            setLastGameScore(newScore);
             setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + time]);
             if (newSet3 === 2) {
               setIsRunning(false); // Stop the timer when set3 = 2
@@ -247,6 +255,8 @@ useEffect(() => {
         if (newGame >= 6 && newGame - otherTeam.game >= 2) {
           if (currentSet === 1) {
             newSet1 += 1;
+            setLastScores((prev) => ({ ...prev, set1: newScore }));
+            setLastGameScore(newScore);
             if (newSet1 === 2 || newSet2 === 2) {
               setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
               setWinningTeamStats({
@@ -267,6 +277,8 @@ useEffect(() => {
             setSetTimeDurations((prev) => [prev[0] + time, prev[1], prev[2]]);
           } else if (currentSet === 2) {
             newSet2 += 1;
+            setLastScores((prev) => ({ ...prev, set2: newScore }));
+            setLastGameScore(newScore);
             if (newSet1 === 2 || newSet2 === 2) {
               setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
               setWinningTeamStats({
@@ -287,6 +299,8 @@ useEffect(() => {
             setSetTimeDurations((prev) => [prev[0], prev[1] + time, prev[2]]);
           } else if (currentSet === 3) {
             newSet3 += 1;
+            setLastScores((prev) => ({ ...prev, set3: newScore }));
+            setLastGameScore(newScore);
             setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + time]);
             if (newSet3 === 2) {
               setIsRunning(false); // Stop the timer when set3 = 2
@@ -302,6 +316,8 @@ useEffect(() => {
         if (newGame >= 6 && newGame - otherTeam.game >= 2) {
           if (currentSet === 1) {
             newSet1 += 1;
+            setLastScores((prev) => ({ ...prev, set1: newScore }));
+            setLastGameScore(newScore);
             if (newSet1 === 2 || newSet2 === 2) {
               setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
               setWinningTeamStats({
@@ -322,6 +338,8 @@ useEffect(() => {
             setSetTimeDurations((prev) => [prev[0] + time, prev[1], prev[2]]);
           } else if (currentSet === 2) {
             newSet2 += 1;
+            setLastScores((prev) => ({ ...prev, set2: newScore }));
+            setLastGameScore(newScore);
             if (newSet1 === 2 || newSet2 === 2) {
               setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
               setWinningTeamStats({
@@ -342,6 +360,8 @@ useEffect(() => {
             setSetTimeDurations((prev) => [prev[0], prev[1] + time, prev[2]]);
           } else if (currentSet === 3) {
             newSet3 += 1;
+            setLastScores((prev) => ({ ...prev, set3: newScore }));
+            setLastGameScore(newScore);
             setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + time]);
             if (newSet3 === 2) {
               setIsRunning(false); // Stop the timer when set3 = 2
@@ -542,7 +562,7 @@ useEffect(() => {
           </Dialog>
         </div>
         {/* Headers */}
-        <div className="grid grid-cols-6 gap-4 text-base text-gray-300 text-center sm:text-xl">
+        <div className="grid grid-cols-6 gap-4 text-sm text-gray-300 text-center sm:text-xl">
           <div></div>
           <div>SET 1</div>
           <div>SET 2</div>
@@ -553,7 +573,7 @@ useEffect(() => {
 
         {/* Team 1 */}
         <div className="grid grid-cols-6 gap-4 items-center">
-          <div className="text-[#3498db] text-2xl font-extrabold sm:text-3xl whitespace-nowrap">
+          <div className="text-[#3498db] text-xl font-extrabold sm:text-3xl ">
             {team1Name}
           </div>
           <div className="text-center  text-white  text-xl sm:text-3xl">
@@ -579,7 +599,7 @@ useEffect(() => {
 
         {/* Team 2 */}
         <div className="grid grid-cols-6 gap-4 items-center">
-          <div className="text-[#e74c3c] text-2xl font-extrabold sm:text-3xl  whitespace-nowrap">
+          <div className="text-[#e74c3c] text-lg font-extrabold sm:text-3xl  ">
             {team2Name}
           </div>
           <div className="text-center text-white text-xl sm:text-3xl">
@@ -603,11 +623,11 @@ useEffect(() => {
           </Button>
         </div>
         {/* Duration */}
-<div className="grid grid-cols-6 gap-4 items-center">
-          <div className="text-[#91989c] text-2xl font-extrabold sm:text-3xl  whitespace-nowrap">
+<div className="grid grid-cols-6 gap-4  items-center">
+          <div className="text-[#91989c] text-sm font-extrabold sm:text-3xl  ">
             Duration
           </div>
-          <div className="text-center text-white text-lg sm:text-3xl">
+          <div className="text-center text-white text-lg sm:text-3xl ">
           {formatTime(setTimeDurations[0])} {/* Set 1 Duration */}
           </div>
           <div className="text-center text-white text-lg sm:text-3xl">
@@ -616,6 +636,26 @@ useEffect(() => {
           <div className="text-center text-white text-lg sm:text-3xl">
           {formatTime(setTimeDurations[2])} {/* Set 3 Duration */}
           </div>
+        </div>
+
+        {/* last Scores */}
+<div className="grid grid-cols-6 gap-4 pt-6 items-center">
+          <div className="text-[#36a2e0] text-base font-extrabold sm:text-3xl  ">
+            Last Scores
+          </div>
+          <div className="text-center text-white text-lg sm:text-3xl">
+          {lastScores.set1} {/* Last score of Set 1 */}
+          </div>
+          <div className="text-center text-white text-lg sm:text-3xl">
+          {lastScores.set2} {/* Last score of Set 2 */}
+          </div>
+          <div className="text-center text-white text-lg sm:text-3xl">
+          {lastScores.set3} {/* Last score of Set 3 */}
+          </div>
+          <div className="text-center text-white text-lg sm:text-3xl">
+          {lastGameScore} {/* Last score of game */}
+          </div>
+          
         </div>
 
         {/* Controls */}
