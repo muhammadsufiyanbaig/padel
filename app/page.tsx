@@ -38,15 +38,39 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 const SCORE_SEQUENCE = ["00", "15", "30", "40", "AD"];
 
 type ScoreState = {
-  team1: { set1: number; set2: number; set3: number; game: number; score: string };
-  team2: { set1: number; set2: number; set3: number; game: number; score: string };
+  team1: {
+    set1: number;
+    set2: number;
+    set3: number;
+    game: number;
+    score: string;
+  };
+  team2: {
+    set1: number;
+    set2: number;
+    set3: number;
+    game: number;
+    score: string;
+  };
 };
 
 export default function PadelScoreboard() {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [team1, setTeam1] = useState({ set1: 0, set2: 0, set3: 0, game: 0, score: "00" });
-  const [team2, setTeam2] = useState({ set1: 0, set2: 0, set3: 0, game: 0, score: "00" });
+  const [team1, setTeam1] = useState({
+    set1: 0,
+    set2: 0,
+    set3: 0,
+    game: 0,
+    score: "00",
+  });
+  const [team2, setTeam2] = useState({
+    set1: 0,
+    set2: 0,
+    set3: 0,
+    game: 0,
+    score: "00",
+  });
   const [history, setHistory] = useState<
     { team1: ScoreState["team1"]; team2: ScoreState["team2"] }[]
   >([]);
@@ -70,8 +94,27 @@ export default function PadelScoreboard() {
   const [setTimeDurations, setSetTimeDurations] = useState([0, 0, 0]);
   const [currentSet, setCurrentSet] = useState(1);
   const [fullMatchTime, setFullMatchTime] = useState(0);
-  const [lastScores, setLastScores] = useState<{ set1: string; set2: string; set3: string }>({ set1: "00", set2: "00", set3: "00" });
+  const [lastScores, setLastScores] = useState<{
+    set1: string;
+    set2: string;
+    set3: string;
+  }>({ set1: "00", set2: "00", set3: "00" });
   const [lastGameScore, setLastGameScore] = useState<string>("00");
+
+  const [lastScoresTeam1, setLastScoresTeam1] = useState<{
+    set1: string;
+    set2: string;
+    set3: string;
+  }>({ set1: "00", set2: "00", set3: "00" });
+
+  const [lastScoresTeam2, setLastScoresTeam2] = useState<{
+    set1: string;
+    set2: string;
+    set3: string;
+  }>({ set1: "00", set2: "00", set3: "00" });
+
+  const [lastGameScoreTeam1, setLastGameScoreTeam1] = useState<string>("00");
+  const [lastGameScoreTeam2, setLastGameScoreTeam2] = useState<string>("00");
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -81,33 +124,33 @@ export default function PadelScoreboard() {
     return `${mins}:${secs}`;
   };
 
-// ...existing code...
-useEffect(() => {
-  if (isRunning && !isMatchWon) {
-    if (!timerRef.current) {
-      timerRef.current = setInterval(() => {
-        setTime((prevTime) => prevTime + 1);
-        setFullMatchTime((prevTime) => prevTime + 1);
-        if (currentSet === 3) {
-          setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + 1]);
-        }
-      }, 1000);
+  // ...existing code...
+  useEffect(() => {
+    if (isRunning && !isMatchWon) {
+      if (!timerRef.current) {
+        timerRef.current = setInterval(() => {
+          setTime((prevTime) => prevTime + 1);
+          setFullMatchTime((prevTime) => prevTime + 1);
+          if (currentSet === 3) {
+            setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + 1]);
+          }
+        }, 1000);
+      }
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     }
-  } else {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  }
 
-  return () => {
-    if (timerRef.current) {
-      clearInterval(timerRef.current);
-      timerRef.current = null;
-    }
-  };
-}, [isRunning, isMatchWon, currentSet]);
-// ...existing code...
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [isRunning, isMatchWon, currentSet]);
+  // ...existing code...
 
   useEffect(() => {
     console.log(`Timer: ${formatTime(time)}`);
@@ -192,7 +235,9 @@ useEffect(() => {
             setLastScores((prev) => ({ ...prev, set1: newScore }));
             setLastGameScore(newScore);
             if (newSet1 === 2 || newSet2 === 2) {
-              setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
+              setPopupMessage(
+                `${team === "team1" ? team1Name : team2Name} wins!`
+              );
               setWinningTeamStats({
                 ...currentTeam,
                 set1: newSet1,
@@ -214,7 +259,9 @@ useEffect(() => {
             setLastScores((prev) => ({ ...prev, set2: newScore }));
             setLastGameScore(newScore);
             if (newSet1 === 2 || newSet2 === 2) {
-              setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
+              setPopupMessage(
+                `${team === "team1" ? team1Name : team2Name} wins!`
+              );
               setWinningTeamStats({
                 ...currentTeam,
                 set1: newSet1,
@@ -258,7 +305,9 @@ useEffect(() => {
             setLastScores((prev) => ({ ...prev, set1: newScore }));
             setLastGameScore(newScore);
             if (newSet1 === 2 || newSet2 === 2) {
-              setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
+              setPopupMessage(
+                `${team === "team1" ? team1Name : team2Name} wins!`
+              );
               setWinningTeamStats({
                 ...currentTeam,
                 set1: newSet1,
@@ -280,7 +329,9 @@ useEffect(() => {
             setLastScores((prev) => ({ ...prev, set2: newScore }));
             setLastGameScore(newScore);
             if (newSet1 === 2 || newSet2 === 2) {
-              setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
+              setPopupMessage(
+                `${team === "team1" ? team1Name : team2Name} wins!`
+              );
               setWinningTeamStats({
                 ...currentTeam,
                 set1: newSet1,
@@ -319,7 +370,9 @@ useEffect(() => {
             setLastScores((prev) => ({ ...prev, set1: newScore }));
             setLastGameScore(newScore);
             if (newSet1 === 2 || newSet2 === 2) {
-              setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
+              setPopupMessage(
+                `${team === "team1" ? team1Name : team2Name} wins!`
+              );
               setWinningTeamStats({
                 ...currentTeam,
                 set1: newSet1,
@@ -341,7 +394,9 @@ useEffect(() => {
             setLastScores((prev) => ({ ...prev, set2: newScore }));
             setLastGameScore(newScore);
             if (newSet1 === 2 || newSet2 === 2) {
-              setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
+              setPopupMessage(
+                `${team === "team1" ? team1Name : team2Name} wins!`
+              );
               setWinningTeamStats({
                 ...currentTeam,
                 set1: newSet1,
@@ -374,10 +429,14 @@ useEffect(() => {
       }
 
       if (
-        (newSet1 >= 2 || newSet2 >= 2 || newSet3 >= 2) &&
-        (team1.set1 + team1.set2 + team1.set3 >= 2 || team2.set1 + team2.set2 + team2.set3 >= 2) ||
-        (team1.set1 + team1.set2 >= 2 || team2.set1 + team2.set2 >= 2) ||
-        (team1.set1 + team2.set1 === 1 && team1.set2 + team2.set2 === 1 && newSet3 === 2)
+        ((newSet1 >= 2 || newSet2 >= 2 || newSet3 >= 2) &&
+          (team1.set1 + team1.set2 + team1.set3 >= 2 ||
+            team2.set1 + team2.set2 + team2.set3 >= 2)) ||
+        team1.set1 + team1.set2 >= 2 ||
+        team2.set1 + team2.set2 >= 2 ||
+        (team1.set1 + team2.set1 === 1 &&
+          team1.set2 + team2.set2 === 1 &&
+          newSet3 === 2)
       ) {
         setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
         setWinningTeamStats({
@@ -394,6 +453,38 @@ useEffect(() => {
         logMatchStats(team1, team2); // Log match stats to console
       }
 
+      if (team === "team1") {
+        setLastScoresTeam1((prev) => ({
+          ...prev,
+          set1: newSet1.toString(),
+          set2: newSet2.toString(),
+          set3: newSet3.toString(),
+        }));
+        setLastGameScoreTeam1(newScore);
+      } else {
+        setLastScoresTeam2((prev) => ({
+          ...prev,
+          set1: newSet1.toString(),
+          set2: newSet2.toString(),
+          set3: newSet3.toString(),
+        }));
+        setLastGameScoreTeam2(newScore);
+      }
+
+      if (currentSet === 1 && newGame === 0) {
+        setLastScores((prev) => ({ ...prev, set1: currentTeam.score }));
+        setLastScoresTeam1((prev) => ({ ...prev, set1: team1.score }));
+        setLastScoresTeam2((prev) => ({ ...prev, set1: team2.score }));
+      } else if (currentSet === 2 && newGame === 0) {
+        setLastScores((prev) => ({ ...prev, set2: currentTeam.score }));
+        setLastScoresTeam1((prev) => ({ ...prev, set2: team1.score }));
+        setLastScoresTeam2((prev) => ({ ...prev, set2: team2.score }));
+      } else if (currentSet === 3 && newGame === 0) {
+        setLastScores((prev) => ({ ...prev, set3: currentTeam.score }));
+        setLastScoresTeam1((prev) => ({ ...prev, set3: team1.score }));
+        setLastScoresTeam2((prev) => ({ ...prev, set3: team2.score }));
+      }
+
       setCurrentTeam({
         ...currentTeam,
         score: newScore,
@@ -403,7 +494,7 @@ useEffect(() => {
         set3: newSet3,
       });
     },
-    [team1, team2, currentSet, time]
+    [team1, team2, currentSet, time, isMatchWon]
   );
 
   const resetScores = () => {
@@ -415,6 +506,14 @@ useEffect(() => {
     setIsMatchWon(false);
     setCurrentSet(1);
     setSetTimeDurations([0, 0, 0]);
+    setTime(0);
+    setFullMatchTime(0);
+    setLastScores({ set1: "00", set2: "00", set3: "00" });
+    setLastGameScore("00");
+    setLastScoresTeam1({ set1: "00", set2: "00", set3: "00" });
+    setLastGameScoreTeam1("00");
+    setLastScoresTeam2({ set1: "00", set2: "00", set3: "00" });
+    setLastGameScoreTeam2("00");
   };
 
   const undo = () => {
@@ -440,22 +539,30 @@ useEffect(() => {
     const rows = [
       [
         "Team 1",
-        "Sets",
+        "Set 1",
+        "Set 2",
+        "Set 3",
         "Games",
         "Score",
         "Team 2",
-        "Sets",
+        "Set 1",
+        "Set 2",
+        "Set 3",
         "Games",
         "Score",
         "Match Time",
       ],
       ...allPreviousStats.map((stat) => [
         stat.team1.name,
-        stat.team1.set,
+        stat.team1.set1,
+        stat.team1.set2,
+        stat.team1.set3,
         stat.team1.game,
         stat.team1.score,
         stat.team2.name,
-        stat.team2.set,
+        stat.team2.set1,
+        stat.team2.set2,
+        stat.team2.set3,
         stat.team2.game,
         stat.team2.score,
         stat.matchTime,
@@ -493,7 +600,7 @@ useEffect(() => {
 
   return (
     <div className="min-h-screen flex  items-center bg-zinc-800 p-6">
-      <div className="w-full max-w-5xl mx-auto space-y-8">
+      <div className="w-full max-w-5xl mx-auto space-y-6">
         <div className="space-y-4">
           <Image
             className="w-full"
@@ -599,7 +706,7 @@ useEffect(() => {
 
         {/* Team 2 */}
         <div className="grid grid-cols-6 gap-4 items-center">
-          <div className="text-[#e74c3c] text-lg font-extrabold sm:text-3xl  ">
+          <div className="text-[#9a9e95] text-lg font-extrabold sm:text-3xl  ">
             {team2Name}
           </div>
           <div className="text-center text-white text-xl sm:text-3xl">
@@ -615,7 +722,7 @@ useEffect(() => {
             {team2.game}
           </div>
           <Button
-            className={`bg-[#e74c3c] text-white text-2xl font-bold  w-full h-full rounded-lg p-4 sm:text-3xl`}
+            className={`bg-[#454942] text-white text-2xl font-bold  w-full h-full rounded-lg p-4 sm:text-3xl`}
             onClick={() => updateScore("team2")}
             disabled={isMatchWon}
           >
@@ -623,43 +730,63 @@ useEffect(() => {
           </Button>
         </div>
         {/* Duration */}
-<div className="grid grid-cols-6 gap-4  items-center">
+        <div className="grid grid-cols-6 gap-4  items-center">
           <div className="text-[#91989c] text-sm font-extrabold sm:text-3xl  ">
             Duration
           </div>
           <div className="text-center text-white text-lg sm:text-3xl ">
-          {formatTime(setTimeDurations[0])} {/* Set 1 Duration */}
+            {formatTime(setTimeDurations[0])} {/* Set 1 Duration */}
           </div>
           <div className="text-center text-white text-lg sm:text-3xl">
-          {formatTime(setTimeDurations[1])} {/* Set 2 Duration */}
+            {formatTime(setTimeDurations[1])} {/* Set 2 Duration */}
           </div>
           <div className="text-center text-white text-lg sm:text-3xl">
-          {formatTime(setTimeDurations[2])} {/* Set 3 Duration */}
+            {formatTime(setTimeDurations[2])} {/* Set 3 Duration */}
           </div>
         </div>
 
-        {/* last Scores */}
-<div className="grid grid-cols-6 gap-4 pt-6 items-center">
-          <div className="text-[#36a2e0] text-base font-extrabold sm:text-3xl  ">
-            Last Scores
+        <> 
+        {/* last Scores  of Team1*/}
+        <div className="grid grid-cols-6 items-center">
+          <div className="text-[#5482e4] text-base font-extrabold sm:text-3xl  ">
+            Last Scores of Team1
           </div>
           <div className="text-center text-white text-lg sm:text-3xl">
-          {lastScores.set1} {/* Last score of Set 1 */}
+            {lastScores.set1} {/* Last score of Set 1 */}
           </div>
           <div className="text-center text-white text-lg sm:text-3xl">
-          {lastScores.set2} {/* Last score of Set 2 */}
+            {lastScores.set2} {/* Last score of Set 2 */}
           </div>
           <div className="text-center text-white text-lg sm:text-3xl">
-          {lastScores.set3} {/* Last score of Set 3 */}
+            {lastScores.set3} {/* Last score of Set 3 */}
           </div>
           <div className="text-center text-white text-lg sm:text-3xl">
-          {lastGameScore} {/* Last score of game */}
+            {lastGameScore} {/* Last score of game */}
           </div>
-          
         </div>
+
+        {/* Last Scores of Team 2 */}
+        <div className="grid grid-cols-6 items-center">
+          <div className="text-[#9eacb9] text-base font-extrabold sm:text-3xl">
+            Last Scores of Team 2
+          </div>
+          <div className="text-center text-white text-lg sm:text-3xl">
+            {lastScoresTeam2.set1} {/* Last score of Set 1 */}
+          </div>
+          <div className="text-center text-white text-lg sm:text-3xl">
+            {lastScoresTeam2.set2} {/* Last score of Set 2 */}
+          </div>
+          <div className="text-center text-white text-lg sm:text-3xl">
+            {lastScoresTeam2.set3} {/* Last score of Set 3 */}
+          </div>
+          <div className="text-center text-white text-lg sm:text-3xl">
+            {lastGameScoreTeam2} {/* Last score of game */}
+          </div>
+        </div>
+        </>
 
         {/* Controls */}
-        <div className="flex justify-center gap-4 pt-4 flex-wrap">
+        <div className="flex justify-center gap-4 flex-wrap">
           {isMatchWon ? (
             <Button
               variant="ghost"
@@ -750,91 +877,119 @@ useEffect(() => {
                   Match History
                 </DialogTitle>
                 <div className="flex justify-between items-center">
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={downloadCSV}
-                  className=""
-                >
-                  <ArrowDownToLine className="w-6 h-6 text-gray-400" />
-                </Button>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={clearMatchHistory}
-                  className=""
-                >
-                  <Trash className="w-6 h-6 text-gray-400 hover:text-red-700" />
-                </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={downloadCSV}
+                    className=""
+                  >
+                    <ArrowDownToLine className="w-6 h-6 text-gray-400" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={clearMatchHistory}
+                    className=""
+                  >
+                    <Trash className="w-6 h-6 text-gray-400 hover:text-red-700" />
+                  </Button>
                 </div>
               </DialogHeader>
-              <ScrollArea className="rounded-md w-full overflow-x-auto">
+                <ScrollArea className="rounded-md w-full h-96 overflow-auto">
                 <Table className="">
                   <TableHeader>
-                    <TableRow className="bg-zinc-800">
-                      <TableHead className="text-zinc-300 text-right">Team 1</TableHead>
-                      <TableHead className="text-zinc-300 text-right">
-                        Sets
-                      </TableHead>
-                      <TableHead className="text-zinc-300 text-right">
-                        Games
-                      </TableHead>
-                      <TableHead className="text-zinc-300 text-right">
-                        Score
-                      </TableHead>
-                      <TableHead className="text-zinc-300 text-right">Team 2</TableHead>
-                      <TableHead className="text-zinc-300 text-right">
-                        Sets
-                      </TableHead>
-                      <TableHead className="text-zinc-300 text-right">
-                        Games
-                      </TableHead>
-                      <TableHead className="text-zinc-300 text-right">
-                        Score
-                      </TableHead>
-                      <TableHead className="text-zinc-300 text-right">
-                        Match Time
-                      </TableHead>
-                    </TableRow>
+                  <TableRow className="bg-zinc-800">
+                    <TableHead className="text-zinc-300 text-right">
+                    Team 1
+                    </TableHead>
+                    <TableHead className="text-zinc-300 text-right">
+                    Set 1
+                    </TableHead>
+                    <TableHead className="text-zinc-300 text-right">
+                    Set 2
+                    </TableHead>
+                    <TableHead className="text-zinc-300 text-right">
+                    Set 3
+                    </TableHead>
+                    <TableHead className="text-zinc-300 text-right">
+                    Games
+                    </TableHead>
+                    <TableHead className="text-zinc-300 text-right">
+                    Score
+                    </TableHead>
+                    <TableHead className="text-zinc-300 text-right">
+                    Team 2
+                    </TableHead>
+                    <TableHead className="text-zinc-300 text-right">
+                    Set 1
+                    </TableHead>
+                    <TableHead className="text-zinc-300 text-right">
+                    Set 2
+                    </TableHead>
+                    <TableHead className="text-zinc-300 text-right">
+                    Set 3
+                    </TableHead>
+                    <TableHead className="text-zinc-300 text-right">
+                    Games
+                    </TableHead>
+                    <TableHead className="text-zinc-300 text-right">
+                    Score
+                    </TableHead>
+                    <TableHead className="text-zinc-300 text-right">
+                    Match Time
+                    </TableHead>
+                  </TableRow>
                   </TableHeader>
                   <TableBody>
-                    {allPreviousStats.map((stat, index) => (
-                      <TableRow
-                        key={index}
-                        className="border-b border-zinc-700 text-right"
-                      >
-                        <TableCell className="font-medium text-right text-zinc-300 ">
-                          {stat.team1.name}
-                        </TableCell>
-                        <TableCell className="text-right text-zinc-300">
-                          {stat.team1.set}
-                        </TableCell>
-                        <TableCell className="text-right text-zinc-300">
-                          {stat.team1.game}
-                        </TableCell>
-                        <TableCell className="text-right text-zinc-300">
-                          {stat.team1.score}
-                        </TableCell>
-                        <TableCell className="font-medium text-zinc-300">
-                          {stat.team2.name}
-                        </TableCell>
-                        <TableCell className="text-right text-zinc-300">
-                          {stat.team2.set}
-                        </TableCell>
-                        <TableCell className="text-right text-zinc-300">
-                          {stat.team2.game}
-                        </TableCell>
-                        <TableCell className="text-right text-zinc-300">
-                          {stat.team2.score}
-                        </TableCell>
-                        <TableCell className="text-zinc-300">
-                          {stat.matchTime}
-                        </TableCell>
-                      </TableRow>
-                    ))}
+                  {allPreviousStats.map((stat, index) => (
+                    <TableRow
+                    key={index}
+                    className="border-b border-zinc-700 text-right"
+                    >
+                    <TableCell className="font-medium text-right text-zinc-300 ">
+                      {stat.team1.name}
+                    </TableCell>
+                    <TableCell className="text-right text-zinc-300">
+                      {stat.team1.set1}
+                    </TableCell>
+                    <TableCell className="text-right text-zinc-300">
+                      {stat.team1.set2}
+                    </TableCell>
+                    <TableCell className="text-right text-zinc-300">
+                      {stat.team1.set3}
+                    </TableCell>
+                    <TableCell className="text-right text-zinc-300">
+                      {stat.team1.game}
+                    </TableCell>
+                    <TableCell className="text-right text-zinc-300">
+                      {stat.team1.score}
+                    </TableCell>
+                    <TableCell className="font-medium text-zinc-300">
+                      {stat.team2.name}
+                    </TableCell>
+                    <TableCell className="text-right text-zinc-300">
+                      {stat.team2.set1}
+                    </TableCell>
+                    <TableCell className="text-right text-zinc-300">
+                      {stat.team2.set2}
+                    </TableCell>
+                    <TableCell className="text-right text-zinc-300">
+                      {stat.team2.set3}
+                    </TableCell>
+                    <TableCell className="text-right text-zinc-300">
+                      {stat.team2.game}
+                    </TableCell>
+                    <TableCell className="text-right text-zinc-300">
+                      {stat.team2.score}
+                    </TableCell>
+                    <TableCell className="text-zinc-300">
+                      {stat.matchTime}
+                    </TableCell>
+                    </TableRow>
+                  ))}
                   </TableBody>
                 </Table>
-              </ScrollArea>
+                </ScrollArea>
               <Button
                 onClick={() => setIsStatsDialogOpen(false)}
                 className="mt-6 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-400"
