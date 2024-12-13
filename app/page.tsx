@@ -1,20 +1,10 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
-import {
-  Timer,
-  ArrowDownToLine,
-  Undo,
-  Redo,
-  RefreshCcw,
-  Play,
-  Pause,
-  TimerReset,
-  UserPen,
-  Trophy,
+import { Timer, ArrowDownToLine, Undo, Redo, RefreshCcw, Play, Pause, TimerReset, UserPen, Trophy,
   ChartBarBig,
   Trash,
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button} from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -34,6 +24,8 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import DialogComponent from "./components/Dialog";
+import WinnerDialog from "./components/WinnerDialog";
 
 const SCORE_SEQUENCE = ["00", "15", "30", "40", "AD"];
 
@@ -94,27 +86,29 @@ export default function PadelScoreboard() {
   const [setTimeDurations, setSetTimeDurations] = useState([0, 0, 0]);
   const [currentSet, setCurrentSet] = useState(1);
   const [fullMatchTime, setFullMatchTime] = useState(0);
-  const [lastScores, setLastScores] = useState<{
-    set1: string;
-    set2: string;
-    set3: string;
-  }>({ set1: "00", set2: "00", set3: "00" });
-  const [lastGameScore, setLastGameScore] = useState<string>("00");
 
-  const [lastScoresTeam1, setLastScoresTeam1] = useState<{
-    set1: string;
-    set2: string;
-    set3: string;
-  }>({ set1: "00", set2: "00", set3: "00" });
+  const [isSetWon, setIsSetWon] = useState(false);
+  const [setWonTeam, setSetWonTeam] = useState<"team1" | "team2" | null>(null);
+  const [isWinnerDialogOpen, setIsWinnerDialogOpen] = useState(false);
+  const [winner, setWinner] = useState("");
+  const [gridCol, setGridCol] = useState(7);
 
-  const [lastScoresTeam2, setLastScoresTeam2] = useState<{
-    set1: string;
-    set2: string;
-    set3: string;
-  }>({ set1: "00", set2: "00", set3: "00" });
 
-  const [lastGameScoreTeam1, setLastGameScoreTeam1] = useState<string>("00");
-  const [lastGameScoreTeam2, setLastGameScoreTeam2] = useState<string>("00");
+
+  const [sets, setSets] = useState([
+    { team1: 0, team2: 0 },
+    { team1: 0, team2: 0 },
+    { team1: 0, team2: 0 },
+  ]);
+
+  const addSet = () => {
+    if (sets.length < 5) {
+      setSets((prevSets) => [...prevSets, { team1: 0, team2: 0 }]);
+      setGridCol((prev) => prev + 1);
+      setSetTimeDurations((prev) => [...prev, 0]);
+    }
+  };
+  
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -123,6 +117,7 @@ export default function PadelScoreboard() {
     const secs = (seconds % 60).toString().padStart(2, "0");
     return `${mins}:${secs}`;
   };
+  
 
   // ...existing code...
   useEffect(() => {
@@ -232,8 +227,8 @@ export default function PadelScoreboard() {
         if (newGame >= 6 && newGame - otherTeam.game >= 2) {
           if (currentSet === 1) {
             newSet1 += 1;
-            setLastScores((prev) => ({ ...prev, set1: newScore }));
-            setLastGameScore(newScore);
+            setIsSetWon(true);
+            setSetWonTeam(team);
             if (newSet1 === 2 || newSet2 === 2) {
               setPopupMessage(
                 `${team === "team1" ? team1Name : team2Name} wins!`
@@ -256,8 +251,8 @@ export default function PadelScoreboard() {
             setSetTimeDurations((prev) => [prev[0] + time, prev[1], prev[2]]);
           } else if (currentSet === 2) {
             newSet2 += 1;
-            setLastScores((prev) => ({ ...prev, set2: newScore }));
-            setLastGameScore(newScore);
+            setIsSetWon(true);
+            setSetWonTeam(team);
             if (newSet1 === 2 || newSet2 === 2) {
               setPopupMessage(
                 `${team === "team1" ? team1Name : team2Name} wins!`
@@ -280,8 +275,8 @@ export default function PadelScoreboard() {
             setSetTimeDurations((prev) => [prev[0], prev[1] + time, prev[2]]);
           } else if (currentSet === 3) {
             newSet3 += 1;
-            setLastScores((prev) => ({ ...prev, set3: newScore }));
-            setLastGameScore(newScore);
+            setIsSetWon(true);
+            setSetWonTeam(team);
             setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + time]);
             if (newSet3 === 2) {
               setIsRunning(false); // Stop the timer when set3 = 2
@@ -302,8 +297,8 @@ export default function PadelScoreboard() {
         if (newGame >= 6 && newGame - otherTeam.game >= 2) {
           if (currentSet === 1) {
             newSet1 += 1;
-            setLastScores((prev) => ({ ...prev, set1: newScore }));
-            setLastGameScore(newScore);
+            setIsSetWon(true);
+            setSetWonTeam(team);
             if (newSet1 === 2 || newSet2 === 2) {
               setPopupMessage(
                 `${team === "team1" ? team1Name : team2Name} wins!`
@@ -326,8 +321,8 @@ export default function PadelScoreboard() {
             setSetTimeDurations((prev) => [prev[0] + time, prev[1], prev[2]]);
           } else if (currentSet === 2) {
             newSet2 += 1;
-            setLastScores((prev) => ({ ...prev, set2: newScore }));
-            setLastGameScore(newScore);
+            setIsSetWon(true);
+            setSetWonTeam(team);
             if (newSet1 === 2 || newSet2 === 2) {
               setPopupMessage(
                 `${team === "team1" ? team1Name : team2Name} wins!`
@@ -350,8 +345,8 @@ export default function PadelScoreboard() {
             setSetTimeDurations((prev) => [prev[0], prev[1] + time, prev[2]]);
           } else if (currentSet === 3) {
             newSet3 += 1;
-            setLastScores((prev) => ({ ...prev, set3: newScore }));
-            setLastGameScore(newScore);
+            setIsSetWon(true);
+            setSetWonTeam(team);
             setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + time]);
             if (newSet3 === 2) {
               setIsRunning(false); // Stop the timer when set3 = 2
@@ -367,8 +362,8 @@ export default function PadelScoreboard() {
         if (newGame >= 6 && newGame - otherTeam.game >= 2) {
           if (currentSet === 1) {
             newSet1 += 1;
-            setLastScores((prev) => ({ ...prev, set1: newScore }));
-            setLastGameScore(newScore);
+            setIsSetWon(true);
+            setSetWonTeam(team);
             if (newSet1 === 2 || newSet2 === 2) {
               setPopupMessage(
                 `${team === "team1" ? team1Name : team2Name} wins!`
@@ -391,8 +386,8 @@ export default function PadelScoreboard() {
             setSetTimeDurations((prev) => [prev[0] + time, prev[1], prev[2]]);
           } else if (currentSet === 2) {
             newSet2 += 1;
-            setLastScores((prev) => ({ ...prev, set2: newScore }));
-            setLastGameScore(newScore);
+            setIsSetWon(true);
+            setSetWonTeam(team);
             if (newSet1 === 2 || newSet2 === 2) {
               setPopupMessage(
                 `${team === "team1" ? team1Name : team2Name} wins!`
@@ -415,8 +410,8 @@ export default function PadelScoreboard() {
             setSetTimeDurations((prev) => [prev[0], prev[1] + time, prev[2]]);
           } else if (currentSet === 3) {
             newSet3 += 1;
-            setLastScores((prev) => ({ ...prev, set3: newScore }));
-            setLastGameScore(newScore);
+            setIsSetWon(true);
+            setSetWonTeam(team);
             setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + time]);
             if (newSet3 === 2) {
               setIsRunning(false); // Stop the timer when set3 = 2
@@ -453,38 +448,6 @@ export default function PadelScoreboard() {
         logMatchStats(team1, team2); // Log match stats to console
       }
 
-      if (team === "team1") {
-        setLastScoresTeam1((prev) => ({
-          ...prev,
-          set1: newSet1.toString(),
-          set2: newSet2.toString(),
-          set3: newSet3.toString(),
-        }));
-        setLastGameScoreTeam1(newScore);
-      } else {
-        setLastScoresTeam2((prev) => ({
-          ...prev,
-          set1: newSet1.toString(),
-          set2: newSet2.toString(),
-          set3: newSet3.toString(),
-        }));
-        setLastGameScoreTeam2(newScore);
-      }
-
-      if (currentSet === 1 && newGame === 0) {
-        setLastScores((prev) => ({ ...prev, set1: currentTeam.score }));
-        setLastScoresTeam1((prev) => ({ ...prev, set1: team1.score }));
-        setLastScoresTeam2((prev) => ({ ...prev, set1: team2.score }));
-      } else if (currentSet === 2 && newGame === 0) {
-        setLastScores((prev) => ({ ...prev, set2: currentTeam.score }));
-        setLastScoresTeam1((prev) => ({ ...prev, set2: team1.score }));
-        setLastScoresTeam2((prev) => ({ ...prev, set2: team2.score }));
-      } else if (currentSet === 3 && newGame === 0) {
-        setLastScores((prev) => ({ ...prev, set3: currentTeam.score }));
-        setLastScoresTeam1((prev) => ({ ...prev, set3: team1.score }));
-        setLastScoresTeam2((prev) => ({ ...prev, set3: team2.score }));
-      }
-
       setCurrentTeam({
         ...currentTeam,
         score: newScore,
@@ -508,12 +471,6 @@ export default function PadelScoreboard() {
     setSetTimeDurations([0, 0, 0]);
     setTime(0);
     setFullMatchTime(0);
-    setLastScores({ set1: "00", set2: "00", set3: "00" });
-    setLastGameScore("00");
-    setLastScoresTeam1({ set1: "00", set2: "00", set3: "00" });
-    setLastGameScoreTeam1("00");
-    setLastScoresTeam2({ set1: "00", set2: "00", set3: "00" });
-    setLastGameScoreTeam2("00");
   };
 
   const undo = () => {
@@ -598,6 +555,46 @@ export default function PadelScoreboard() {
     localStorage.setItem("allPreviousStats", JSON.stringify(allPreviousStats));
   }, [allPreviousStats]);
 
+  const closeSet = () => {
+    setIsSetWon(false);
+    setSetWonTeam(null);
+    setCurrentSet((prevSet) => prevSet + 1);
+    setTeam1((prev) => ({ ...prev, game: 0, score: "00" }));
+    setTeam2((prev) => ({ ...prev, game: 0, score: "00" }));
+    setTime(0);
+  };
+
+  const continueSet = () => {
+    setIsSetWon(false);
+    setSetWonTeam(null);
+  };
+
+  const handleAssignWinner = () => {
+    setIsWinnerDialogOpen(true);
+  };
+
+  useEffect(() => {
+    if (winner) {
+      if (winner === "team1") {
+        setPopupMessage(`${team1Name} wins!`);
+        setWinningTeamStats(team1);
+      } else if (winner === "team2") {
+        setPopupMessage(`${team2Name} wins!`);
+        setWinningTeamStats(team2);
+      } else {
+        setPopupMessage("It's a draw!");
+        setWinningTeamStats(null);
+      }
+      setIsPopupOpen(true);
+    }
+  }, [winner]);
+
+  const handleWinnerSelected = (selectedWinner: string) => {
+    setWinner(selectedWinner);
+    setIsWinnerDialogOpen(false);
+    setIsPopupOpen(true);
+  };
+
   return (
     <div className="min-h-screen flex  items-center bg-zinc-800 p-6">
       <div className="w-full max-w-5xl mx-auto space-y-6">
@@ -669,28 +666,33 @@ export default function PadelScoreboard() {
           </Dialog>
         </div>
         {/* Headers */}
-        <div className="grid grid-cols-6 gap-4 text-sm text-gray-300 text-center sm:text-xl">
+        <div className="grid grid-cols-8 gap-4 text-sm text-gray-300 text-center sm:text-xl">
           <div></div>
           <div>SET 1</div>
           <div>SET 2</div>
           <div>SET 3</div>
+          <div>SET 4</div>
           <div>GAME</div>
           <div>SCORE</div>
+          <div></div>
         </div>
 
         {/* Team 1 */}
-        <div className="grid grid-cols-6 gap-4 items-center">
+        <div className="grid grid-cols-8 gap-4 items-center">
           <div className="text-[#3498db] text-xl font-extrabold sm:text-3xl ">
             {team1Name}
           </div>
           <div className="text-center  text-white  text-xl sm:text-3xl">
-            {team1.set1}
+            {team1.set1 > 0 ? team1.set1 : ""}
           </div>
           <div className="text-center  text-white  text-xl sm:text-3xl">
-            {team1.set2}
+            {team1.set2 > 0 ? team1.set2 : ""}
           </div>
           <div className="text-center  text-white  text-xl sm:text-3xl">
-            {team1.set3}
+            {team1.set3 > 0 ? team1.set3 : ""}
+          </div>
+          <div className="text-center  text-white  text-xl sm:text-3xl">
+            {team1.set3 > 0 ? team1.set3 : ""}
           </div>
           <div className="text-center  text-white  text-xl sm:text-3xl">
             {team1.game}
@@ -698,39 +700,58 @@ export default function PadelScoreboard() {
           <Button
             className={`bg-[#3498db] text-white text-2xl font-bold  w-full h-full rounded-lg p-4 sm:text-3xl`}
             onClick={() => updateScore("team1")}
-            disabled={isMatchWon}
+            // disabled={isMatchWon }
           >
             {team1.score}
           </Button>
+          <Button
+            className={`!bg-[#ffffff] !text-blue-500 text-sm font-bold  w-full rounded-lg px-4 py-6 sm:text-base hover:scale-105`}
+            // onClick={() => updateScore("team1")}
+            // disabled={isMatchWon || isSetWon}
+          >
+            Add Set
+          </Button>
+
         </div>
 
         {/* Team 2 */}
-        <div className="grid grid-cols-6 gap-4 items-center">
+        <div className="grid grid-cols-8 gap-4 items-center">
           <div className="text-[#9a9e95] text-lg font-extrabold sm:text-3xl  ">
             {team2Name}
           </div>
           <div className="text-center text-white text-xl sm:text-3xl">
-            {team2.set1}
+            {team2.set1 > 0 ? team2.set1 : ""}
           </div>
           <div className="text-center text-white text-xl sm:text-3xl">
-            {team2.set2}
+            {team2.set2 > 0 ? team2.set2 : ""}
           </div>
           <div className="text-center text-white text-xl sm:text-3xl">
-            {team2.set3}
+            {team2.set3 > 0 ? team2.set3 : ""}
           </div>
-          <div className="text-center text-white text-xl sm:text-3xl">
+          <div className="text-center  text-white  text-xl sm:text-3xl">
+            {team1.set3 > 0 ? team1.set3 : ""}
+          </div>
+              <div className="text-center text-white text-xl sm:text-3xl">
             {team2.game}
           </div>
+          
           <Button
             className={`bg-[#454942] text-white text-2xl font-bold  w-full h-full rounded-lg p-4 sm:text-3xl`}
             onClick={() => updateScore("team2")}
-            disabled={isMatchWon}
+            // disabled={isMatchWon }
           >
             {team2.score}
           </Button>
+          <Button
+            className={`!bg-[#ffffff] !text-blue-500 text-sm font-bold  w-full rounded-lg px-4 py-6 sm:text-base hover:scale-105`}
+            onClick={handleAssignWinner}
+            // disabled={isMatchWon }
+          >
+            Assign Winner
+          </Button>
         </div>
         {/* Duration */}
-        <div className="grid grid-cols-6 gap-4  items-center">
+        <div className="grid grid-cols-8 gap-4  items-center">
           <div className="text-[#91989c] text-sm font-extrabold sm:text-3xl  ">
             Duration
           </div>
@@ -740,50 +761,17 @@ export default function PadelScoreboard() {
           <div className="text-center text-white text-lg sm:text-3xl">
             {formatTime(setTimeDurations[1])} {/* Set 2 Duration */}
           </div>
-          <div className="text-center text-white text-lg sm:text-3xl">
+          <div className="text-white text-lg sm:text-3xl col-span-3 text-start">
             {formatTime(setTimeDurations[2])} {/* Set 3 Duration */}
           </div>
+          <Button
+            className={`!bg-[#ffffff] !text-blue-500 text-sm font-bold  w-full rounded-lg px-4 py-6 sm:text-base hover:scale-105`}
+            // onClick={() => updateScore("team2")}
+            // disabled={isMatchWon || isSetWon}
+          >
+            Complete Set 
+          </Button>
         </div>
-
-        <> 
-        {/* last Scores  of Team1*/}
-        <div className="grid grid-cols-6 items-center">
-          <div className="text-[#5482e4] text-base font-extrabold sm:text-3xl  ">
-            Last Scores of Team1
-          </div>
-          <div className="text-center text-white text-lg sm:text-3xl">
-            {lastScores.set1} {/* Last score of Set 1 */}
-          </div>
-          <div className="text-center text-white text-lg sm:text-3xl">
-            {lastScores.set2} {/* Last score of Set 2 */}
-          </div>
-          <div className="text-center text-white text-lg sm:text-3xl">
-            {lastScores.set3} {/* Last score of Set 3 */}
-          </div>
-          <div className="text-center text-white text-lg sm:text-3xl">
-            {lastGameScore} {/* Last score of game */}
-          </div>
-        </div>
-
-        {/* Last Scores of Team 2 */}
-        <div className="grid grid-cols-6 items-center">
-          <div className="text-[#9eacb9] text-base font-extrabold sm:text-3xl">
-            Last Scores of Team 2
-          </div>
-          <div className="text-center text-white text-lg sm:text-3xl">
-            {lastScoresTeam2.set1} {/* Last score of Set 1 */}
-          </div>
-          <div className="text-center text-white text-lg sm:text-3xl">
-            {lastScoresTeam2.set2} {/* Last score of Set 2 */}
-          </div>
-          <div className="text-center text-white text-lg sm:text-3xl">
-            {lastScoresTeam2.set3} {/* Last score of Set 3 */}
-          </div>
-          <div className="text-center text-white text-lg sm:text-3xl">
-            {lastGameScoreTeam2} {/* Last score of game */}
-          </div>
-        </div>
-        </>
 
         {/* Controls */}
         <div className="flex justify-center gap-4 flex-wrap">
@@ -1001,64 +989,19 @@ export default function PadelScoreboard() {
         </div>
 
         {/* Popup */}
-        <Dialog open={isPopupOpen} onOpenChange={setIsPopupOpen}>
-          <DialogContent className="bg-zinc-900 text-zinc-100 border-zinc-700 border">
-            <DialogHeader>
-              <DialogTitle className="text-2xl font-bold text-blue-400 flex items-center justify-center">
-                <Trophy className="w-6 h-6 mr-2 text-yellow-400" />
-                {popupMessage}
-              </DialogTitle>
-            </DialogHeader>
-            {winningTeamStats && (
-              <div className="mt-4">
-                <div className="grid grid-cols-3 gap-4 text-center">
-                  <div className="bg-zinc-800 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-zinc-400">Set1</h3>
-                    <p className="text-2xl font-bold text-blue-400">
-                      {winningTeamStats.set1}
-                    </p>
-                  </div>
-                  <div className="bg-zinc-800 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-zinc-400">Set2</h3>
-                    <p className="text-2xl font-bold text-blue-400">
-                      {winningTeamStats.set2}
-                    </p>
-                  </div>
-                  <div className="bg-zinc-800 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-zinc-400">Set3</h3>
-                    <p className="text-2xl font-bold text-blue-400">
-                      {winningTeamStats.set3}
-                    </p>
-                  </div>
-                  <div className="bg-zinc-800 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-zinc-400">Games</h3>
-                    <p className="text-2xl font-bold text-blue-400">
-                      {winningTeamStats.game}
-                    </p>
-                  </div>
-                  <div className="bg-zinc-800 p-4 rounded-lg">
-                    <h3 className="text-sm font-medium text-zinc-400">Score</h3>
-                    <p className="text-2xl font-bold text-blue-400">
-                      {winningTeamStats.score}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-            <DialogFooter>
-              <Button
-                onClick={() => {
-                  setIsPopupOpen(false);
-                  resetScores();
-                  resetTimer();
-                }}
-                className="w-full mt-4 bg-blue-500 hover:bg-blue-400 text-white"
-              >
-                Close and Reset
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
+        <WinnerDialog
+          isOpen={isPopupOpen}
+          onOpenChange={setIsPopupOpen}
+          popupMessage={popupMessage}
+          winningTeamStats={winningTeamStats}
+          resetScores={resetScores}
+          resetTimer={resetTimer}
+        />
+        <DialogComponent
+          isOpen={isWinnerDialogOpen}
+          onOpenChange={setIsWinnerDialogOpen}
+          onWinnerSelected={handleWinnerSelected}
+        />
       </div>
     </div>
   );
