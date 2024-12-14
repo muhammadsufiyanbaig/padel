@@ -1,10 +1,20 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Timer, ArrowDownToLine, Undo, Redo, RefreshCcw, Play, Pause, TimerReset, UserPen, Trophy,
+import {
+  Timer,
+  ArrowDownToLine,
+  Undo,
+  Redo,
+  RefreshCcw,
+  Play,
+  Pause,
+  TimerReset,
+  UserPen,
+  Trophy,
   ChartBarBig,
   Trash,
 } from "lucide-react";
-import { Button} from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
   Dialog,
@@ -46,17 +56,26 @@ type ScoreState = {
   };
 };
 
+type TeamScore = {
+  [key: string]: number | string;
+  set1: number;
+  set2: number;
+  set3: number;
+  game: number;
+  score: string;
+};
+
 export default function PadelScoreboard() {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
-  const [team1, setTeam1] = useState({
+  const [team1, setTeam1] = useState<TeamScore>({
     set1: 0,
     set2: 0,
     set3: 0,
     game: 0,
     score: "00",
   });
-  const [team2, setTeam2] = useState({
+  const [team2, setTeam2] = useState<TeamScore>({
     set1: 0,
     set2: 0,
     set3: 0,
@@ -93,8 +112,6 @@ export default function PadelScoreboard() {
   const [winner, setWinner] = useState("");
   const [gridCol, setGridCol] = useState(7);
 
-
-
   const [sets, setSets] = useState([
     { team1: 0, team2: 0 },
     { team1: 0, team2: 0 },
@@ -108,7 +125,6 @@ export default function PadelScoreboard() {
       setSetTimeDurations((prev) => [...prev, 0]);
     }
   };
-  
 
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60)
@@ -117,7 +133,6 @@ export default function PadelScoreboard() {
     const secs = (seconds % 60).toString().padStart(2, "0");
     return `${mins}:${secs}`;
   };
-  
 
   // ...existing code...
   useEffect(() => {
@@ -281,6 +296,13 @@ export default function PadelScoreboard() {
             if (newSet3 === 2) {
               setIsRunning(false); // Stop the timer when set3 = 2
             }
+          } else if (currentSet > 3) {
+            const setIndex = currentSet - 1;
+            setSetTimeDurations((prev) => {
+              const newDurations = [...prev];
+              newDurations[setIndex] += time;
+              return newDurations;
+            });
           }
           newGame = 0;
           setTime(0); // Reset timer for the new set
@@ -351,6 +373,13 @@ export default function PadelScoreboard() {
             if (newSet3 === 2) {
               setIsRunning(false); // Stop the timer when set3 = 2
             }
+          } else if (currentSet > 3) {
+            const setIndex = currentSet - 1;
+            setSetTimeDurations((prev) => {
+              const newDurations = [...prev];
+              newDurations[setIndex] += time;
+              return newDurations;
+            });
           }
           newGame = 0;
           setTime(0); // Reset timer for the new set
@@ -416,6 +445,13 @@ export default function PadelScoreboard() {
             if (newSet3 === 2) {
               setIsRunning(false); // Stop the timer when set3 = 2
             }
+          } else if (currentSet > 3) {
+            const setIndex = currentSet - 1;
+            setSetTimeDurations((prev) => {
+              const newDurations = [...prev];
+              newDurations[setIndex] += time;
+              return newDurations;
+            });
           }
           newGame = 0;
           setTime(0); // Reset timer for the new set
@@ -468,7 +504,7 @@ export default function PadelScoreboard() {
     setIsPopupOpen(false);
     setIsMatchWon(false);
     setCurrentSet(1);
-    setSetTimeDurations([0, 0, 0]);
+    setSetTimeDurations([0, 0, 0, 0, 0]); // Reset durations for all sets
     setTime(0);
     setFullMatchTime(0);
   };
@@ -597,7 +633,7 @@ export default function PadelScoreboard() {
 
   return (
     <div className="min-h-screen flex  items-center bg-zinc-800 p-6">
-      <div className="w-full max-w-5xl mx-auto space-y-6">
+      <div className="w-full max-w-6xl mx-auto space-y-6">
         <div className="space-y-4">
           <Image
             className="w-full"
@@ -666,111 +702,115 @@ export default function PadelScoreboard() {
           </Dialog>
         </div>
         {/* Headers */}
-        <div className="grid grid-cols-8 gap-4 text-sm text-gray-300 text-center sm:text-xl">
+        <div
+          className={`grid gap-4 text-sm text-gray-300 text-center sm:text-xl`}
+          style={{
+            gridTemplateColumns: `repeat(${gridCol}, 1fr)`,
+          }}
+        >
           <div></div>
-          <div>SET 1</div>
-          <div>SET 2</div>
-          <div>SET 3</div>
-          <div>SET 4</div>
+          {sets.map((_, index) => (
+            <div key={index}>SET {index + 1}</div>
+          ))}
           <div>GAME</div>
           <div>SCORE</div>
           <div></div>
         </div>
 
         {/* Team 1 */}
-        <div className="grid grid-cols-8 gap-4 items-center">
+        <div
+          className={`grid gap-4 items-center`}
+          style={{
+            gridTemplateColumns: `repeat(${gridCol}, 1fr)`,
+          }}
+        >
           <div className="text-[#3498db] text-xl font-extrabold sm:text-3xl ">
             {team1Name}
           </div>
-          <div className="text-center  text-white  text-xl sm:text-3xl">
-            {team1.set1 > 0 ? team1.set1 : ""}
-          </div>
-          <div className="text-center  text-white  text-xl sm:text-3xl">
-            {team1.set2 > 0 ? team1.set2 : ""}
-          </div>
-          <div className="text-center  text-white  text-xl sm:text-3xl">
-            {team1.set3 > 0 ? team1.set3 : ""}
-          </div>
-          <div className="text-center  text-white  text-xl sm:text-3xl">
-            {team1.set3 > 0 ? team1.set3 : ""}
-          </div>
-          <div className="text-center  text-white  text-xl sm:text-3xl">
+          {sets.map((set, index) => (
+            <div
+              key={index}
+              className="text-center text-white text-xl sm:text-3xl"
+            >
+              {team1[`set${index + 1}`] ? team1[`set${index + 1}`] : ""}
+            </div>
+          ))}
+          <div className="text-center text-white text-xl sm:text-3xl">
             {team1.game}
           </div>
           <Button
-            className={`bg-[#3498db] text-white text-2xl font-bold  w-full h-full rounded-lg p-4 sm:text-3xl`}
+            className={`bg-[#3498db] text-white text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-3xl`}
             onClick={() => updateScore("team1")}
-            // disabled={isMatchWon }
           >
             {team1.score}
           </Button>
           <Button
-            className={`!bg-[#ffffff] !text-blue-500 text-sm font-bold  w-full rounded-lg px-4 py-6 sm:text-base hover:scale-105`}
-            // onClick={() => updateScore("team1")}
-            // disabled={isMatchWon || isSetWon}
+            className={`!bg-[#ffffff] !text-blue-500 text-sm font-bold w-full rounded-lg px-4 py-6 sm:text-base hover:scale-105`}
+            onClick={addSet}
+            disabled={sets.length >= 5}
           >
             Add Set
           </Button>
-
         </div>
 
         {/* Team 2 */}
-        <div className="grid grid-cols-8 gap-4 items-center">
+        <div
+          className={`grid gap-4 items-center`}
+          style={{
+            gridTemplateColumns: `repeat(${gridCol}, 1fr)`,
+          }}
+        >
           <div className="text-[#9a9e95] text-lg font-extrabold sm:text-3xl  ">
             {team2Name}
           </div>
+          {sets.map((set, index) => (
+            <div
+              key={index}
+              className="text-center text-white text-xl sm:text-3xl"
+            >
+              {team2[`set${index + 1}`]  ? team2[`set${index + 1}`] : ""}
+            </div>
+          ))}
           <div className="text-center text-white text-xl sm:text-3xl">
-            {team2.set1 > 0 ? team2.set1 : ""}
-          </div>
-          <div className="text-center text-white text-xl sm:text-3xl">
-            {team2.set2 > 0 ? team2.set2 : ""}
-          </div>
-          <div className="text-center text-white text-xl sm:text-3xl">
-            {team2.set3 > 0 ? team2.set3 : ""}
-          </div>
-          <div className="text-center  text-white  text-xl sm:text-3xl">
-            {team1.set3 > 0 ? team1.set3 : ""}
-          </div>
-              <div className="text-center text-white text-xl sm:text-3xl">
             {team2.game}
           </div>
-          
           <Button
-            className={`bg-[#454942] text-white text-2xl font-bold  w-full h-full rounded-lg p-4 sm:text-3xl`}
+            className={`bg-[#454942] text-white text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-3xl`}
             onClick={() => updateScore("team2")}
-            // disabled={isMatchWon }
           >
             {team2.score}
           </Button>
           <Button
-            className={`!bg-[#ffffff] !text-blue-500 text-sm font-bold  w-full rounded-lg px-4 py-6 sm:text-base hover:scale-105`}
+            className={`!bg-[#ffffff] !text-blue-500 text-sm font-bold w-full rounded-lg px-4 py-6 sm:text-base hover:scale-105`}
             onClick={handleAssignWinner}
-            // disabled={isMatchWon }
           >
             Assign Winner
           </Button>
         </div>
         {/* Duration */}
-        <div className="grid grid-cols-8 gap-4  items-center">
+        <div
+          className={`grid gap-4 items-center`}
+          style={{
+            gridTemplateColumns: `repeat(${gridCol}, 1fr)`,
+          }}
+        >
           <div className="text-[#91989c] text-sm font-extrabold sm:text-3xl  ">
             Duration
           </div>
-          <div className="text-center text-white text-lg sm:text-3xl ">
-            {formatTime(setTimeDurations[0])} {/* Set 1 Duration */}
-          </div>
-          <div className="text-center text-white text-lg sm:text-3xl">
-            {formatTime(setTimeDurations[1])} {/* Set 2 Duration */}
-          </div>
-          <div className="text-white text-lg sm:text-3xl col-span-3 text-start">
-            {formatTime(setTimeDurations[2])} {/* Set 3 Duration */}
-          </div>
-          <Button
+          {setTimeDurations.map((duration, index) => (
+            <div key={index} className="text-center text-white text-lg sm:text-3xl">
+              {formatTime(duration)}
+            </div>
+          ))}
+          <div></div>
+                    <Button
             className={`!bg-[#ffffff] !text-blue-500 text-sm font-bold  w-full rounded-lg px-4 py-6 sm:text-base hover:scale-105`}
             // onClick={() => updateScore("team2")}
             // disabled={isMatchWon || isSetWon}
           >
             Complete Set 
           </Button>
+
         </div>
 
         {/* Controls */}
@@ -883,101 +923,101 @@ export default function PadelScoreboard() {
                   </Button>
                 </div>
               </DialogHeader>
-                <ScrollArea className="rounded-md w-full h-96 overflow-auto">
+              <ScrollArea className="rounded-md w-full h-96 overflow-auto">
                 <Table className="">
                   <TableHeader>
-                  <TableRow className="bg-zinc-800">
-                    <TableHead className="text-zinc-300 text-right">
-                    Team 1
-                    </TableHead>
-                    <TableHead className="text-zinc-300 text-right">
-                    Set 1
-                    </TableHead>
-                    <TableHead className="text-zinc-300 text-right">
-                    Set 2
-                    </TableHead>
-                    <TableHead className="text-zinc-300 text-right">
-                    Set 3
-                    </TableHead>
-                    <TableHead className="text-zinc-300 text-right">
-                    Games
-                    </TableHead>
-                    <TableHead className="text-zinc-300 text-right">
-                    Score
-                    </TableHead>
-                    <TableHead className="text-zinc-300 text-right">
-                    Team 2
-                    </TableHead>
-                    <TableHead className="text-zinc-300 text-right">
-                    Set 1
-                    </TableHead>
-                    <TableHead className="text-zinc-300 text-right">
-                    Set 2
-                    </TableHead>
-                    <TableHead className="text-zinc-300 text-right">
-                    Set 3
-                    </TableHead>
-                    <TableHead className="text-zinc-300 text-right">
-                    Games
-                    </TableHead>
-                    <TableHead className="text-zinc-300 text-right">
-                    Score
-                    </TableHead>
-                    <TableHead className="text-zinc-300 text-right">
-                    Match Time
-                    </TableHead>
-                  </TableRow>
+                    <TableRow className="bg-zinc-800">
+                      <TableHead className="text-zinc-300 text-right">
+                        Team 1
+                      </TableHead>
+                      <TableHead className="text-zinc-300 text-right">
+                        Set 1
+                      </TableHead>
+                      <TableHead className="text-zinc-300 text-right">
+                        Set 2
+                      </TableHead>
+                      <TableHead className="text-zinc-300 text-right">
+                        Set 3
+                      </TableHead>
+                      <TableHead className="text-zinc-300 text-right">
+                        Games
+                      </TableHead>
+                      <TableHead className="text-zinc-300 text-right">
+                        Score
+                      </TableHead>
+                      <TableHead className="text-zinc-300 text-right">
+                        Team 2
+                      </TableHead>
+                      <TableHead className="text-zinc-300 text-right">
+                        Set 1
+                      </TableHead>
+                      <TableHead className="text-zinc-300 text-right">
+                        Set 2
+                      </TableHead>
+                      <TableHead className="text-zinc-300 text-right">
+                        Set 3
+                      </TableHead>
+                      <TableHead className="text-zinc-300 text-right">
+                        Games
+                      </TableHead>
+                      <TableHead className="text-zinc-300 text-right">
+                        Score
+                      </TableHead>
+                      <TableHead className="text-zinc-300 text-right">
+                        Match Time
+                      </TableHead>
+                    </TableRow>
                   </TableHeader>
                   <TableBody>
-                  {allPreviousStats.map((stat, index) => (
-                    <TableRow
-                    key={index}
-                    className="border-b border-zinc-700 text-right"
-                    >
-                    <TableCell className="font-medium text-right text-zinc-300 ">
-                      {stat.team1.name}
-                    </TableCell>
-                    <TableCell className="text-right text-zinc-300">
-                      {stat.team1.set1}
-                    </TableCell>
-                    <TableCell className="text-right text-zinc-300">
-                      {stat.team1.set2}
-                    </TableCell>
-                    <TableCell className="text-right text-zinc-300">
-                      {stat.team1.set3}
-                    </TableCell>
-                    <TableCell className="text-right text-zinc-300">
-                      {stat.team1.game}
-                    </TableCell>
-                    <TableCell className="text-right text-zinc-300">
-                      {stat.team1.score}
-                    </TableCell>
-                    <TableCell className="font-medium text-zinc-300">
-                      {stat.team2.name}
-                    </TableCell>
-                    <TableCell className="text-right text-zinc-300">
-                      {stat.team2.set1}
-                    </TableCell>
-                    <TableCell className="text-right text-zinc-300">
-                      {stat.team2.set2}
-                    </TableCell>
-                    <TableCell className="text-right text-zinc-300">
-                      {stat.team2.set3}
-                    </TableCell>
-                    <TableCell className="text-right text-zinc-300">
-                      {stat.team2.game}
-                    </TableCell>
-                    <TableCell className="text-right text-zinc-300">
-                      {stat.team2.score}
-                    </TableCell>
-                    <TableCell className="text-zinc-300">
-                      {stat.matchTime}
-                    </TableCell>
-                    </TableRow>
-                  ))}
+                    {allPreviousStats.map((stat, index) => (
+                      <TableRow
+                        key={index}
+                        className="border-b border-zinc-700 text-right"
+                      >
+                        <TableCell className="font-medium text-right text-zinc-300 ">
+                          {stat.team1.name}
+                        </TableCell>
+                        <TableCell className="text-right text-zinc-300">
+                          {stat.team1.set1}
+                        </TableCell>
+                        <TableCell className="text-right text-zinc-300">
+                          {stat.team1.set2}
+                        </TableCell>
+                        <TableCell className="text-right text-zinc-300">
+                          {stat.team1.set3}
+                        </TableCell>
+                        <TableCell className="text-right text-zinc-300">
+                          {stat.team1.game}
+                        </TableCell>
+                        <TableCell className="text-right text-zinc-300">
+                          {stat.team1.score}
+                        </TableCell>
+                        <TableCell className="font-medium text-zinc-300">
+                          {stat.team2.name}
+                        </TableCell>
+                        <TableCell className="text-right text-zinc-300">
+                          {stat.team2.set1}
+                        </TableCell>
+                        <TableCell className="text-right text-zinc-300">
+                          {stat.team2.set2}
+                        </TableCell>
+                        <TableCell className="text-right text-zinc-300">
+                          {stat.team2.set3}
+                        </TableCell>
+                        <TableCell className="text-right text-zinc-300">
+                          {stat.team2.game}
+                        </TableCell>
+                        <TableCell className="text-right text-zinc-300">
+                          {stat.team2.score}
+                        </TableCell>
+                        <TableCell className="text-zinc-300">
+                          {stat.matchTime}
+                        </TableCell>
+                      </TableRow>
+                    ))}
                   </TableBody>
                 </Table>
-                </ScrollArea>
+              </ScrollArea>
               <Button
                 onClick={() => setIsStatsDialogOpen(false)}
                 className="mt-6 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-400"
