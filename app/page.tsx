@@ -84,7 +84,7 @@ export default function PadelScoreboard() {
     setTeam2,
     setHistory,
     setFuture,
-    setSetTimeDurations
+    setSetTimeDurations,
   );
 
   const addSet = () => {
@@ -112,7 +112,9 @@ export default function PadelScoreboard() {
           setFullMatchTime((prevTime) => prevTime + 1);
           setSetTimeDurations((prev) => {
             const newDurations = [...prev];
-            newDurations[currentSet - 1] += 1; // Increment the duration of the current set
+            if (currentSet <= newDurations.length) {
+              newDurations[currentSet - 1] += 1; // Increment the duration of the current set
+            }
             return newDurations;
           });
         }, 1000);
@@ -172,6 +174,8 @@ export default function PadelScoreboard() {
     setIsRunning(false);
     setTime(0);
     setFullMatchTime(0); // Reset full match time as well
+    setSets([{ team1: 0, team2: 0 }, { team1: 0, team2: 0 }, { team1: 0, team2: 0 }]);
+    setGridCol(7)
   };
 
   const saveMatchStats = async (
@@ -481,6 +485,7 @@ export default function PadelScoreboard() {
           />
         </div>
         {/* Headers */}
+  
         <div
           className={`grid gap-4 text-sm text-gray-300 text-center sm:text-xl`}
           style={{
@@ -489,10 +494,22 @@ export default function PadelScoreboard() {
         >
           <div></div>
           {sets.map((_, index) => (
-            <div key={index}>SET {index + 1}</div>
+            <div key={index} className="rounded-lg py-4" 
+              style={{
+                backgroundColor: "#2c3e5040",
+              }}
+            >SET {index + 1}</div>
           ))}
-          <div>GAME</div>
-          <div>SCORE</div>
+          <div className="rounded-lg py-4" 
+            style={{
+              backgroundColor: "#2c3e5040",
+            }}
+          >GAME</div>
+          <div className="rounded-lg py-4" 
+            style={{
+              backgroundColor: "#2c3e5040",
+            }}
+          >SCORE</div>
           <div></div>
         </div>
 
