@@ -9,6 +9,7 @@ import MatchHistory from "./components/MatchHistory";
 import TeamsNameDialog from "./components/TeamsName";
 import CustomTimer from "./components/CustomTimer";
 import { ScoreState, TeamScore } from "./Types";
+import { useScoreHistory } from "./components/Snippet";
 
 const SCORE_SEQUENCE = ["00", "15", "30", "40", "AD"];
 
@@ -64,6 +65,15 @@ export default function PadelScoreboard() {
     { team1: 0, team2: 0 },
     { team1: 0, team2: 0 },
   ]);
+
+  const { undo, redo, resetScores } = useScoreHistory(
+    team1,
+    team2,
+    setTeam1,
+    setTeam2,
+    setHistory,
+    setFuture
+  );
 
   const addSet = () => {
     if (sets.length < 5) {
@@ -227,37 +237,6 @@ export default function PadelScoreboard() {
     },
     [team1, team2, currentSet, fullMatchTime, isMatchWon]
   );
-
-  const resetScores = () => {
-    setTeam1({ set1: 0, set2: 0, set3: 0, game: 0, score: "00" });
-    setTeam2({ set1: 0, set2: 0, set3: 0, game: 0, score: "00" });
-    setHistory([]);
-    setFuture([]);
-    setIsPopupOpen(false);
-    setIsMatchWon(false);
-    setCurrentSet(1);
-    setSetTimeDurations([0, 0, 0, 0, 0]); // Reset durations for all sets
-    setTime(0);
-    setFullMatchTime(0);
-  };
-
-  const undo = () => {
-    if (history.length > 0) {
-      const prevState = history.pop()!;
-      setFuture((prev) => [{ team1, team2 }, ...prev]);
-      setTeam1(prevState.team1);
-      setTeam2(prevState.team2);
-    }
-  };
-
-  const redo = () => {
-    if (future.length > 0) {
-      const nextState = future.shift()!;
-      setHistory((prev) => [...prev, { team1, team2 }]);
-      setTeam1(nextState.team1);
-      setTeam2(nextState.team2);
-    }
-  };
 
   const downloadCSV = () => {
     const rows = [
