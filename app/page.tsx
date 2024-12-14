@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Undo, Redo, RefreshCcw, Play, Pause, TimerReset, UserPen, Trophy, ChartBarBig, Plus, PlusIcon } from "lucide-react";
+import { Undo, Redo, RefreshCcw, Play, Pause, TimerReset, UserPen, Trophy, ChartBarBig, PlusIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import DialogComponent from "./components/Dialog";
@@ -314,8 +314,7 @@ export default function PadelScoreboard() {
   };
 
   const clearMatchHistory = () => {
-    localStorage.removeItem("allPreviousStats");
-    setAllPreviousStats([]);
+     setAllPreviousStats([]);
   };
 
   useEffect(() => {
