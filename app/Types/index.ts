@@ -3,6 +3,8 @@ export type ScoreState = {
     set1: number;
     set2: number;
     set3: number;
+    set4?: number;
+    set5?: number;
     game: number;
     score: string;
   };
@@ -10,16 +12,20 @@ export type ScoreState = {
     set1: number;
     set2: number;
     set3: number;
+    set4?: number;
+    set5?: number;
     game: number;
     score: string;
   };
 };
 
 export type TeamScore = {
-  [key: string]: number | string;
+  [key: string]: number | string | undefined;
   set1: number;
   set2: number;
   set3: number;
+  set4?: number;
+  set5?: number;
   game: number;
   score: string;
 };
@@ -86,6 +92,8 @@ export type WinnerDialogProps = {
     set1: number;
     set2: number;
     set3: number;
+    set4?: number;
+    set5?: number;
     game: number;
     score: string;
   } | null;

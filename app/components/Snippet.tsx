@@ -7,7 +7,8 @@ export const useScoreHistory = (
   setTeam1: Dispatch<SetStateAction<ScoreState["team1"]>>,
   setTeam2: Dispatch<SetStateAction<ScoreState["team2"]>>,
   setHistory: Dispatch<SetStateAction<{ team1: ScoreState["team1"]; team2: ScoreState["team2"] }[]>>,
-  setFuture: Dispatch<SetStateAction<{ team1: ScoreState["team1"]; team2: ScoreState["team2"] }[]>>
+  setFuture: Dispatch<SetStateAction<{ team1: ScoreState["team1"]; team2: ScoreState["team2"] }[]>>,
+  setSetTimeDurations: Dispatch<SetStateAction<number[]>>
 ) => {
   const undo = () => {
     setHistory((prevHistory) => {
@@ -38,6 +39,7 @@ export const useScoreHistory = (
     setTeam2({ set1: 0, set2: 0, set3: 0, game: 0, score: "00" });
     setHistory([]);
     setFuture([]);
+    setSetTimeDurations([0, 0, 0, 0, 0]); // Reset set durations
   };
 
   return { undo, redo, resetScores };

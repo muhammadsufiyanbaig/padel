@@ -60,6 +60,22 @@ const WinnerDialog: React.FC<WinnerDialogProps> = ({
                   {winningTeamStats.score}
                 </p>
               </div>
+              {winningTeamStats.set4 !== undefined && (
+                <div className="bg-zinc-800 p-4 rounded-lg">
+                  <h3 className="text-sm font-medium text-zinc-400">Set4</h3>
+                  <p className="text-2xl font-bold text-blue-400">
+                    {winningTeamStats.set4}
+                  </p>
+                </div>
+              )}
+              {winningTeamStats.set5 !== undefined && (
+                <div className="bg-zinc-800 p-4 rounded-lg">
+                  <h3 className="text-sm font-medium text-zinc-400">Set5</h3>
+                  <p className="text-2xl font-bold text-blue-400">
+                    {winningTeamStats.set5}
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         ) : (

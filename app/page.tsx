@@ -53,7 +53,6 @@ export default function PadelScoreboard() {
   const [setTimeDurations, setSetTimeDurations] = useState([0, 0, 0]);
   const [currentSet, setCurrentSet] = useState(1);
   const [fullMatchTime, setFullMatchTime] = useState(0);
-
   const [isSetWon, setIsSetWon] = useState(false);
   const [setWonTeam, setSetWonTeam] = useState<"team1" | "team2" | null>(null);
   const [isWinnerDialogOpen, setIsWinnerDialogOpen] = useState(false);
@@ -72,7 +71,8 @@ export default function PadelScoreboard() {
     setTeam1,
     setTeam2,
     setHistory,
-    setFuture
+    setFuture,
+    setSetTimeDurations
   );
 
   const addSet = () => {
@@ -98,9 +98,11 @@ export default function PadelScoreboard() {
         timerRef.current = setInterval(() => {
           setTime((prevTime) => prevTime + 1);
           setFullMatchTime((prevTime) => prevTime + 1);
-          if (currentSet === 3) {
-            setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + 1]);
-          }
+          setSetTimeDurations((prev) => {
+            const newDurations = [...prev];
+            newDurations[currentSet - 1] += 1; // Increment the duration of the current set
+            return newDurations;
+          });
         }, 1000);
       }
     } else {
@@ -116,7 +118,7 @@ export default function PadelScoreboard() {
         timerRef.current = null;
       }
     };
-  }, [isRunning, isMatchWon, currentSet, fullMatchTime]);
+  }, [isRunning, isMatchWon, currentSet]);
   // ...existing code...
 
   useEffect(() => {
@@ -205,6 +207,8 @@ export default function PadelScoreboard() {
       let newSet1 = currentTeam.set1;
       let newSet2 = currentTeam.set2;
       let newSet3 = currentTeam.set3;
+      let newSet4 = currentTeam.set4;
+      let newSet5 = currentTeam.set5;
 
       // Scoring Logic
       if (currentScore === "AD" && otherScore === "40") {
@@ -233,6 +237,8 @@ export default function PadelScoreboard() {
         set1: newSet1,
         set2: newSet2,
         set3: newSet3,
+        set4: newSet4,
+        set5: newSet5,
       });
     },
     [team1, team2, currentSet, fullMatchTime, isMatchWon]
@@ -361,6 +367,10 @@ export default function PadelScoreboard() {
       }));
       setCurrentSet((prev) => prev + 1);
       setTime(0);
+
+      if (currentSet === 5) {
+        setIsRunning(false); // Stop the full match timer
+      }
     }
   };
 
@@ -429,7 +439,7 @@ export default function PadelScoreboard() {
               key={index}
               className="text-center text-white text-xl sm:text-3xl"
             >
-              {team1[`set${index + 1}`] ? team1[`set${index + 1}`] : ""}
+              {team1[`set${index + 1}`] ? team1[`set${index + 1}`] : "00"}
             </div>
           ))}
           <div className="text-center text-white text-xl sm:text-3xl">
@@ -466,7 +476,7 @@ export default function PadelScoreboard() {
               key={index}
               className="text-center text-white text-xl sm:text-3xl"
             >
-              {team2[`set${index + 1}`] ? team2[`set${index + 1}`] : ""}
+              {team2[`set${index + 1}`] ? team2[`set${index + 1}`] : "00"} 
             </div>
           ))}
           <div className="text-center text-white text-xl sm:text-3xl">
@@ -508,7 +518,7 @@ export default function PadelScoreboard() {
           <Button
             className={`!bg-[#ffffff] !text-blue-500 text-sm font-bold  w-full rounded-lg px-4 py-6 sm:text-base hover:scale-105`}
             onClick={completeSet}
-            disabled={isMatchWon || isSetWon}
+            disabled={isMatchWon || isSetWon || currentSet > 5 || (team1.game === 0 && team2.game === 0)}
           >
             Complete Set
           </Button>
