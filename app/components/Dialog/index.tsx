@@ -1,7 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import Confetti from "react-confetti";
+import React, { useState } from "react";
 import {
   Dialog,
   DialogContent,
@@ -9,16 +8,11 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Trophy } from "lucide-react";
+import { Trophy, CheckCircle } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-
-interface WinnerSelectionDialogProps {
-  isOpen: boolean;
-  onOpenChange: (open: boolean) => void;
-  onWinnerSelected: (winner: string) => void;
-}
+import { WinnerSelectionDialogProps } from "@/app/Types";
 
 const WinnerSelectionDialog: React.FC<WinnerSelectionDialogProps> = ({
   isOpen,
@@ -26,60 +20,67 @@ const WinnerSelectionDialog: React.FC<WinnerSelectionDialogProps> = ({
   onWinnerSelected,
 }) => {
   const [selectedWinner, setSelectedWinner] = useState<string>("");
-  const [showConfetti, setShowConfetti] = useState<boolean>(false);
 
   const handleWinnerSelection = () => {
-    if (selectedWinner !== "Draw") {
-      setShowConfetti(true); // Trigger confetti for winners
-      setTimeout(() => setShowConfetti(false), 5000); // Stop confetti after 5 seconds
-    }
     onWinnerSelected(selectedWinner);
     onOpenChange(false);
   };
 
   return (
-    <>
-      {showConfetti && <Confetti />}
-      <Dialog open={isOpen} onOpenChange={onOpenChange}>
-        <DialogContent className="sm:max-w-[425px] bg-zinc-900 text-zinc-100 border-zinc-700">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold text-blue-400 flex items-center justify-center">
-              <Trophy className="w-6 h-6 mr-2 text-yellow-400" />
-              Select Winner
-            </DialogTitle>
-          </DialogHeader>
-          <div className="py-4">
-            <RadioGroup
-              value={selectedWinner}
-              onValueChange={setSelectedWinner}
-            >
-              <div className="flex items-center space-x-2 mb-2">
-                <RadioGroupItem value="team1" id="team1" />
-                <Label htmlFor="team1">Team 1</Label>
+    <Dialog open={isOpen} onOpenChange={onOpenChange}>
+      <DialogContent className="sm:max-w-[425px] bg-zinc-900 text-zinc-100 border-zinc-700 border rounded-lg shadow-xl">
+        <DialogHeader>
+          <DialogTitle className="text-3xl font-bold text-white flex items-center justify-center mb-6">
+            <Trophy className="w-8 h-8 mr-3 text-yellow-500 animate-pulse" />
+            Select Winner
+          </DialogTitle>
+        </DialogHeader>
+        <div className="py-6">
+          <RadioGroup
+            value={selectedWinner}
+            onValueChange={setSelectedWinner}
+            className="space-y-4"
+          >
+            {["Team 1", "Team 2", "Draw"].map((option) => (
+              <div
+                key={option}
+                className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 ${
+                  selectedWinner === option.toLowerCase().replace(" ", "")
+                    ? "bg-blue-500/20 border border-blue-500"
+                    : "bg-zinc-800 border border-zinc-700 hover:border-blue-500/50"
+                }`}
+              >
+                <RadioGroupItem
+                  value={option.toLowerCase().replace(" ", "")}
+                  id={option.toLowerCase().replace(" ", "")}
+                  className="border-blue-400"
+                />
+                <Label
+                  htmlFor={option.toLowerCase().replace(" ", "")}
+                  className="flex-grow text-lg font-medium cursor-pointer"
+                >
+                  {option}
+                </Label>
+                {selectedWinner === option.toLowerCase().replace(" ", "") && (
+                  <CheckCircle className="w-5 h-5 text-blue-400 animate-in fade-in duration-300" />
+                )}
               </div>
-              <div className="flex items-center space-x-2 mb-2">
-                <RadioGroupItem value="team2" id="team2" />
-                <Label htmlFor="team2">Team 2</Label>
-              </div>
-              <div className="flex items-center space-x-2">
-                <RadioGroupItem value="Draw" id="draw" />
-                <Label htmlFor="draw">Draw</Label>
-              </div>
-            </RadioGroup>
-          </div>
-          <DialogFooter>
-            <Button
-              onClick={handleWinnerSelection}
-              className="w-full bg-blue-500 hover:bg-blue-400 text-white"
-              disabled={!selectedWinner}
-            >
-              Confirm
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
-    </>
+            ))}
+          </RadioGroup>
+        </div>
+        <DialogFooter>
+          <Button
+            onClick={handleWinnerSelection}
+            className="w-full bg-blue-500 hover:bg-blue-400 text-white font-bold py-3 rounded-lg transition-all duration-200 transform hover:scale-105 disabled:opacity-50 disabled:hover:scale-100"
+            disabled={!selectedWinner}
+          >
+            Confirm Selection
+          </Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 };
 
 export default WinnerSelectionDialog;
+

@@ -1,28 +1,14 @@
-import React from 'react'
+import React from "react";
 import {
   Dialog,
   DialogContent,
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Trophy } from 'lucide-react'
-import { Button } from '@/components/ui/button'
-
-interface WinnerDialogProps {
-  isOpen: boolean
-  onOpenChange: (open: boolean) => void
-  popupMessage: string
-  winningTeamStats: {
-    set1: number
-    set2: number
-    set3: number
-    game: number
-    score: string
-  } | null
-  resetScores: () => void
-  resetTimer: () => void
-}
+} from "@/components/ui/dialog";
+import { Trophy } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { WinnerDialogProps } from "@/app/Types";
 
 const WinnerDialog: React.FC<WinnerDialogProps> = ({
   isOpen,
@@ -30,14 +16,14 @@ const WinnerDialog: React.FC<WinnerDialogProps> = ({
   popupMessage,
   winningTeamStats,
   resetScores,
-  resetTimer
+  resetTimer,
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogContent className="bg-zinc-900 text-zinc-100 border-zinc-700 border">
         <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-blue-400 flex items-center justify-center">
-            <Trophy className="w-6 h-6 mr-2 text-yellow-400" />
+          <DialogTitle className="text-3xl font-bold text-white flex items-center justify-center mb-6">
+            <Trophy className="w-8 h-8 mr-3 text-yellow-500 animate-pulse" />
             {popupMessage}
           </DialogTitle>
         </DialogHeader>
@@ -95,7 +81,7 @@ const WinnerDialog: React.FC<WinnerDialogProps> = ({
         </DialogFooter>
       </DialogContent>
     </Dialog>
-  )
-}
+  );
+};
 
-export default WinnerDialog
+export default WinnerDialog;
