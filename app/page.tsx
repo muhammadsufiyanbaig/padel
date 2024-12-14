@@ -239,74 +239,6 @@ export default function PadelScoreboard() {
       if (currentScore === "AD" && otherScore === "40") {
         newGame += 1;
         newScore = "00";
-        if (newGame >= 6 && newGame - otherTeam.game >= 2) {
-          if (currentSet === 1) {
-            newSet1 += 1;
-            setIsSetWon(true);
-            setSetWonTeam(team);
-            if (newSet1 === 2 || newSet2 === 2) {
-              setPopupMessage(
-                `${team === "team1" ? team1Name : team2Name} wins!`
-              );
-              setWinningTeamStats({
-                ...currentTeam,
-                set1: newSet1,
-                set2: newSet2,
-                set3: newSet3,
-                game: newGame,
-                score: newScore,
-              });
-              setIsPopupOpen(true);
-              setIsMatchWon(true);
-              saveMatchStats(team1, team2);
-              logMatchStats(team1, team2);
-              return;
-            }
-            setCurrentSet(2);
-            setSetTimeDurations((prev) => [prev[0] + time, prev[1], prev[2]]);
-          } else if (currentSet === 2) {
-            newSet2 += 1;
-            setIsSetWon(true);
-            setSetWonTeam(team);
-            if (newSet1 === 2 || newSet2 === 2) {
-              setPopupMessage(
-                `${team === "team1" ? team1Name : team2Name} wins!`
-              );
-              setWinningTeamStats({
-                ...currentTeam,
-                set1: newSet1,
-                set2: newSet2,
-                set3: newSet3,
-                game: newGame,
-                score: newScore,
-              });
-              setIsPopupOpen(true);
-              setIsMatchWon(true);
-              saveMatchStats(team1, team2);
-              logMatchStats(team1, team2);
-              return;
-            }
-            setCurrentSet(3);
-            setSetTimeDurations((prev) => [prev[0], prev[1] + time, prev[2]]);
-          } else if (currentSet === 3) {
-            newSet3 += 1;
-            setIsSetWon(true);
-            setSetWonTeam(team);
-            setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + time]);
-            if (newSet3 === 2) {
-              setIsRunning(false); // Stop the timer when set3 = 2
-            }
-          } else if (currentSet > 3) {
-            const setIndex = currentSet - 1;
-            setSetTimeDurations((prev) => {
-              const newDurations = [...prev];
-              newDurations[setIndex] += time;
-              return newDurations;
-            });
-          }
-          newGame = 0;
-          setTime(0); // Reset timer for the new set
-        }
         setOtherTeam({ ...otherTeam, score: "00" });
       } else if (currentScore === "40" && otherScore === "AD") {
         newScore = "40";
@@ -316,172 +248,11 @@ export default function PadelScoreboard() {
       } else if (currentScore === "AD") {
         newGame += 1;
         newScore = "00";
-        if (newGame >= 6 && newGame - otherTeam.game >= 2) {
-          if (currentSet === 1) {
-            newSet1 += 1;
-            setIsSetWon(true);
-            setSetWonTeam(team);
-            if (newSet1 === 2 || newSet2 === 2) {
-              setPopupMessage(
-                `${team === "team1" ? team1Name : team2Name} wins!`
-              );
-              setWinningTeamStats({
-                ...currentTeam,
-                set1: newSet1,
-                set2: newSet2,
-                set3: newSet3,
-                game: newGame,
-                score: newScore,
-              });
-              setIsPopupOpen(true);
-              setIsMatchWon(true);
-              saveMatchStats(team1, team2);
-              logMatchStats(team1, team2);
-              return;
-            }
-            setCurrentSet(2);
-            setSetTimeDurations((prev) => [prev[0] + time, prev[1], prev[2]]);
-          } else if (currentSet === 2) {
-            newSet2 += 1;
-            setIsSetWon(true);
-            setSetWonTeam(team);
-            if (newSet1 === 2 || newSet2 === 2) {
-              setPopupMessage(
-                `${team === "team1" ? team1Name : team2Name} wins!`
-              );
-              setWinningTeamStats({
-                ...currentTeam,
-                set1: newSet1,
-                set2: newSet2,
-                set3: newSet3,
-                game: newGame,
-                score: newScore,
-              });
-              setIsPopupOpen(true);
-              setIsMatchWon(true);
-              saveMatchStats(team1, team2);
-              logMatchStats(team1, team2);
-              return;
-            }
-            setCurrentSet(3);
-            setSetTimeDurations((prev) => [prev[0], prev[1] + time, prev[2]]);
-          } else if (currentSet === 3) {
-            newSet3 += 1;
-            setIsSetWon(true);
-            setSetWonTeam(team);
-            setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + time]);
-            if (newSet3 === 2) {
-              setIsRunning(false); // Stop the timer when set3 = 2
-            }
-          } else if (currentSet > 3) {
-            const setIndex = currentSet - 1;
-            setSetTimeDurations((prev) => {
-              const newDurations = [...prev];
-              newDurations[setIndex] += time;
-              return newDurations;
-            });
-          }
-          newGame = 0;
-          setTime(0); // Reset timer for the new set
-        }
         setOtherTeam({ ...otherTeam, score: "00" });
       } else if (currentScore === "40" && otherScore !== "40") {
         newGame += 1;
         newScore = "00";
-        if (newGame >= 6 && newGame - otherTeam.game >= 2) {
-          if (currentSet === 1) {
-            newSet1 += 1;
-            setIsSetWon(true);
-            setSetWonTeam(team);
-            if (newSet1 === 2 || newSet2 === 2) {
-              setPopupMessage(
-                `${team === "team1" ? team1Name : team2Name} wins!`
-              );
-              setWinningTeamStats({
-                ...currentTeam,
-                set1: newSet1,
-                set2: newSet2,
-                set3: newSet3,
-                game: newGame,
-                score: newScore,
-              });
-              setIsPopupOpen(true);
-              setIsMatchWon(true);
-              saveMatchStats(team1, team2);
-              logMatchStats(team1, team2);
-              return;
-            }
-            setCurrentSet(2);
-            setSetTimeDurations((prev) => [prev[0] + time, prev[1], prev[2]]);
-          } else if (currentSet === 2) {
-            newSet2 += 1;
-            setIsSetWon(true);
-            setSetWonTeam(team);
-            if (newSet1 === 2 || newSet2 === 2) {
-              setPopupMessage(
-                `${team === "team1" ? team1Name : team2Name} wins!`
-              );
-              setWinningTeamStats({
-                ...currentTeam,
-                set1: newSet1,
-                set2: newSet2,
-                set3: newSet3,
-                game: newGame,
-                score: newScore,
-              });
-              setIsPopupOpen(true);
-              setIsMatchWon(true);
-              saveMatchStats(team1, team2);
-              logMatchStats(team1, team2);
-              return;
-            }
-            setCurrentSet(3);
-            setSetTimeDurations((prev) => [prev[0], prev[1] + time, prev[2]]);
-          } else if (currentSet === 3) {
-            newSet3 += 1;
-            setIsSetWon(true);
-            setSetWonTeam(team);
-            setSetTimeDurations((prev) => [prev[0], prev[1], prev[2] + time]);
-            if (newSet3 === 2) {
-              setIsRunning(false); // Stop the timer when set3 = 2
-            }
-          } else if (currentSet > 3) {
-            const setIndex = currentSet - 1;
-            setSetTimeDurations((prev) => {
-              const newDurations = [...prev];
-              newDurations[setIndex] += time;
-              return newDurations;
-            });
-          }
-          newGame = 0;
-          setTime(0); // Reset timer for the new set
-        }
         setOtherTeam({ ...otherTeam, score: "00" });
-      }
-
-      if (
-        ((newSet1 >= 2 || newSet2 >= 2 || newSet3 >= 2) &&
-          (team1.set1 + team1.set2 + team1.set3 >= 2 ||
-            team2.set1 + team2.set2 + team2.set3 >= 2)) ||
-        team1.set1 + team1.set2 >= 2 ||
-        team2.set1 + team2.set2 >= 2 ||
-        (team1.set1 + team2.set1 === 1 &&
-          team1.set2 + team2.set2 === 1 &&
-          newSet3 === 2)
-      ) {
-        setPopupMessage(`${team === "team1" ? team1Name : team2Name} wins!`);
-        setWinningTeamStats({
-          ...currentTeam,
-          set1: newSet1,
-          set2: newSet2,
-          set3: newSet3,
-          game: newGame,
-          score: newScore,
-        });
-        setIsPopupOpen(true);
-        setIsMatchWon(true);
-        saveMatchStats(team1, team2); // Save match stats to local storage
-        logMatchStats(team1, team2); // Log match stats to console
       }
 
       setCurrentTeam({
@@ -629,6 +400,26 @@ export default function PadelScoreboard() {
     setWinner(selectedWinner);
     setIsWinnerDialogOpen(false);
     setIsPopupOpen(true);
+    setIsMatchWon(true); // Mark the match as won
+  };
+
+  const completeSet = () => {
+    if (currentSet <= sets.length) {
+      setTeam1((prev) => ({
+        ...prev,
+        [`set${currentSet}`]: prev.game,
+        game: 0,
+        score: "00", // Reset score to 0
+      }));
+      setTeam2((prev) => ({
+        ...prev,
+        [`set${currentSet}`]: prev.game,
+        game: 0,
+        score: "00", // Reset score to 0
+      }));
+      setCurrentSet((prev) => prev + 1);
+      setTime(0);
+    }
   };
 
   return (
@@ -805,8 +596,8 @@ export default function PadelScoreboard() {
           <div></div>
                     <Button
             className={`!bg-[#ffffff] !text-blue-500 text-sm font-bold  w-full rounded-lg px-4 py-6 sm:text-base hover:scale-105`}
-            // onClick={() => updateScore("team2")}
-            // disabled={isMatchWon || isSetWon}
+            onClick={completeSet}
+            disabled={isMatchWon || isSetWon}
           >
             Complete Set 
           </Button>
