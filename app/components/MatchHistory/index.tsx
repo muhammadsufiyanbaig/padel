@@ -49,24 +49,26 @@ const MatchHistory = ({ isStatsDialogOpen, setIsStatsDialogOpen, allPreviousStat
             <TableBody>
               {allPreviousStats.map((stat, index) => (
                 <TableRow key={index} className="border-b border-zinc-700 text-right">
-                  <TableCell className="font-medium text-right text-zinc-300">{stat.team1.name}</TableCell>
-                  <TableCell className="text-right text-zinc-300">{stat.team1.set1}</TableCell>
-                  <TableCell className="text-right text-zinc-300">{stat.team1.set2}</TableCell>
-                  <TableCell className="text-right text-zinc-300">{stat.team1.set3}</TableCell>
-                  <TableCell className="text-right text-zinc-300">{stat.team1.set4 || 0}</TableCell>
-                  <TableCell className="text-right text-zinc-300">{stat.team1.set5 || 0}</TableCell>
-                  <TableCell className="text-right text-zinc-300">{stat.team1.game}</TableCell>
-                  <TableCell className="text-right text-zinc-300">{stat.team1.score}</TableCell>
-                  <TableCell className="font-medium text-zinc-300">{stat.team2.name}</TableCell>
-                  <TableCell className="text-right text-zinc-300">{stat.team2.set1}</TableCell>
-                  <TableCell className="text-right text-zinc-300">{stat.team2.set2}</TableCell>
-                  <TableCell className="text-right text-zinc-300">{stat.team2.set3}</TableCell>
-                  <TableCell className="text-right text-zinc-300">{stat.team2.set4 || 0}</TableCell>
-                  <TableCell className="text-right text-zinc-300">{stat.team2.set5 || 0}</TableCell>
-                  <TableCell className="text-right text-zinc-300">{stat.team2.game}</TableCell>
-                  <TableCell className="text-right text-zinc-300">{stat.team2.score}</TableCell>
-                  <TableCell className="text-zinc-300">{stat.matchTime}</TableCell>
-                  <TableCell className="text-zinc-300">{stat.setTimes.join(", ")}</TableCell>
+                  <TableCell className="font-medium text-right text-zinc-300">{stat.team1name || 'N/A'}</TableCell>
+                  <TableCell className="text-right text-zinc-300">{stat.team1set1 || 0}</TableCell>
+                  <TableCell className="text-right text-zinc-300">{stat.team1set1 || 0}</TableCell>
+                  <TableCell className="text-right text-zinc-300">{stat.team1set1 || 0}</TableCell>
+                  <TableCell className="text-right text-zinc-300">{stat.team1set1 || '-'}</TableCell>
+                  <TableCell className="text-right text-zinc-300">{stat.team1set1 || '-'}</TableCell>
+                  <TableCell className="text-right text-zinc-300">{stat.team1name || 0}</TableCell>
+                  <TableCell className="text-right text-zinc-300">{stat.team1score || '00'}</TableCell>
+                  <TableCell className="font-medium text-zinc-300">{stat.team2name || 'N/A'}</TableCell>
+                  <TableCell className="text-right text-zinc-300">{stat.team2set2 || 0}</TableCell>
+                  <TableCell className="text-right text-zinc-300">{stat.team2set2 || 0}</TableCell>
+                  <TableCell className="text-right text-zinc-300">{stat.team2set2 || 0}</TableCell>
+                  <TableCell className="text-right text-zinc-300">{stat.team2set2 || '-'}</TableCell>
+                  <TableCell className="text-right text-zinc-300">{stat.team2set2 || '-'}</TableCell>
+                  <TableCell className="text-right text-zinc-300">{stat.team2game || 0}</TableCell>
+                  <TableCell className="text-right text-zinc-300">{stat.team1score || '00'}</TableCell>
+                  <TableCell className="text-zinc-300">{stat.matchtime || 'N/A'}</TableCell>
+                  <TableCell className="text-zinc-300">
+                    {stat.set1time || '-'}, {stat.set2time || '-'}, {stat.set3time || '-'}, {stat.set4time || '-'}, {stat.set5time || '-'}
+                  </TableCell>
                 </TableRow>
               ))}
             </TableBody>

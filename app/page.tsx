@@ -10,6 +10,7 @@ import TeamsNameDialog from "./components/TeamsName";
 import CustomTimer from "./components/CustomTimer";
 import { ScoreState, TeamScore } from "./Types";
 import { useScoreHistory } from "./components/Snippet";
+import axios from 'axios';
 
 const SCORE_SEQUENCE = ["00", "15", "30", "40", "AD"];
 
@@ -162,22 +163,41 @@ export default function PadelScoreboard() {
     setFullMatchTime(0); // Reset full match time as well
   };
 
-  const saveMatchStats = (
+  const saveMatchStats = async (
     team1Stats: ScoreState["team1"],
     team2Stats: ScoreState["team2"]
   ) => {
     const matchStats = {
-      team1: { ...team1Stats, name: team1Name },
-      team2: { ...team2Stats, name: team2Name },
+      team1Name: team1Name,
+      team1Set1: team1Stats.set1,
+      team1Set2: team1Stats.set2,
+      team1Set3: team1Stats.set3,
+      team1Set4: team1Stats.set4,
+      team1Set5: team1Stats.set5,
+      team1Game: team1Stats.game,
+      team1Score: team1Stats.score,
+      team2Name: team2Name,
+      team2Set1: team2Stats.set1,
+      team2Set2: team2Stats.set2,
+      team2Set3: team2Stats.set3,
+      team2Set4: team2Stats.set4,
+      team2Set5: team2Stats.set5,
+      team2Game: team2Stats.game,
+      team2Score: team2Stats.score,
       matchTime: formatTime(fullMatchTime),
-      setTimes: setTimeDurations.map(formatTime),
+      set1Time: setTimeDurations[0] ? formatTime(setTimeDurations[0]) : null,
+      set2Time: setTimeDurations[1] ? formatTime(setTimeDurations[1]) : null,
+      set3Time: setTimeDurations[2] ? formatTime(setTimeDurations[2]) : null,
+      set4Time: setTimeDurations[3] ? formatTime(setTimeDurations[3]) : null,
+      set5Time: setTimeDurations[4] ? formatTime(setTimeDurations[4]) : null,
     };
-    const existingStats = JSON.parse(
-      localStorage.getItem("allPreviousStats") || "[]"
-    );
-    existingStats.push(matchStats);
-    localStorage.setItem("allPreviousStats", JSON.stringify(existingStats));
-    setAllPreviousStats((prevStats) => [...prevStats, matchStats]);
+
+    try {
+      const response = await axios.post('/api/matchhistory', matchStats);
+      setAllPreviousStats((prevStats) => [...prevStats, response.data]);
+    } catch (error) {
+      console.error('Failed to save match history:', error);
+    }
   };
 
   // const logMatchStats = (
@@ -299,15 +319,19 @@ export default function PadelScoreboard() {
   };
 
   useEffect(() => {
-    const storedStats = JSON.parse(
-      localStorage.getItem("allPreviousStats") || "[]"
-    );
-    setAllPreviousStats(storedStats);
+    const fetchMatchHistory = async () => {
+      try {
+        const response = await axios.get('/api/matchhistory');
+        console.log("Match History:", response.data);
+        setAllPreviousStats(response.data);
+        
+      } catch (error) {
+        console.error('Failed to fetch match history:', error);
+      }
+    };
+  
+    fetchMatchHistory();
   }, []);
-
-  useEffect(() => {
-    localStorage.setItem("allPreviousStats", JSON.stringify(allPreviousStats));
-  }, [allPreviousStats]);
 
   const closeSet = () => {
     setIsSetWon(false);
@@ -343,12 +367,17 @@ export default function PadelScoreboard() {
     }
   }, [winner]);
 
-  const handleWinnerSelected = (selectedWinner: string) => {
+  const handleWinnerSelected = async (selectedWinner: string) => {
     setWinner(selectedWinner);
     setIsWinnerDialogOpen(false);
     setIsPopupOpen(true);
     setIsMatchWon(true);
-    saveMatchStats(team1, team2); // Save match stats when the winner is selected
+  
+    if (selectedWinner === "team1") {
+      await saveMatchStats(team1, team2);
+    } else if (selectedWinner === "team2") {
+      await saveMatchStats(team1, team2);
+    }
   };
 
   const completeSet = () => {
