@@ -100,3 +100,13 @@ export type WinnerDialogProps = {
   resetScores: () => void;
   resetTimer: () => void;
 };
+
+export type LoginDialogProps = {
+  isLoginDialogOpen: boolean;
+  username: string;
+  setUsername: (value: string) => void;
+  password: string;
+  setPassword: (value: string) => void;
+  loginError: { username: string; password: string };
+  handleLogin: () => void;
+};

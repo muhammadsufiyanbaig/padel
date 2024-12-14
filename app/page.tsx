@@ -1,6 +1,17 @@
 "use client";
 import { useState, useEffect, useCallback, useRef } from "react";
-import { Undo, Redo, RefreshCcw, Play, Pause, TimerReset, UserPen, Trophy, ChartBarBig, PlusIcon } from "lucide-react";
+import {
+  Undo,
+  Redo,
+  RefreshCcw,
+  Play,
+  Pause,
+  TimerReset,
+  UserPen,
+  Trophy,
+  ChartBarBig,
+  PlusIcon,
+} from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import DialogComponent from "./components/Dialog";
@@ -8,10 +19,10 @@ import WinnerDialog from "./components/WinnerDialog";
 import MatchHistory from "./components/MatchHistory";
 import TeamsNameDialog from "./components/TeamsName";
 import CustomTimer from "./components/CustomTimer";
+import LoginDialog from "./components/LoginDialog";
 import { ScoreState, TeamScore } from "./Types";
 import { useScoreHistory } from "./components/Snippet";
-import axios from 'axios';
-
+import axios from "axios";
 const SCORE_SEQUENCE = ["00", "15", "30", "40", "AD"];
 
 export default function PadelScoreboard() {
@@ -193,10 +204,10 @@ export default function PadelScoreboard() {
     };
 
     try {
-      const response = await axios.post('/api/matchhistory', matchStats);
+      const response = await axios.post("/api/matchhistory", matchStats);
       setAllPreviousStats((prevStats) => [...prevStats, response.data]);
     } catch (error) {
-      console.error('Failed to save match history:', error);
+      console.error("Failed to save match history:", error);
     }
   };
 
@@ -314,21 +325,20 @@ export default function PadelScoreboard() {
   };
 
   const clearMatchHistory = () => {
-     setAllPreviousStats([]);
+    setAllPreviousStats([]);
   };
 
   useEffect(() => {
     const fetchMatchHistory = async () => {
       try {
-        const response = await axios.get('/api/matchhistory');
+        const response = await axios.get("/api/matchhistory");
         console.log("Match History:", response.data);
         setAllPreviousStats(response.data);
-        
       } catch (error) {
-        console.error('Failed to fetch match history:', error);
+        console.error("Failed to fetch match history:", error);
       }
     };
-  
+
     fetchMatchHistory();
   }, []);
 
@@ -371,7 +381,7 @@ export default function PadelScoreboard() {
     setIsWinnerDialogOpen(false);
     setIsPopupOpen(true);
     setIsMatchWon(true);
-  
+
     if (selectedWinner === "team1") {
       await saveMatchStats(team1, team2);
     } else if (selectedWinner === "team2") {
@@ -399,6 +409,40 @@ export default function PadelScoreboard() {
       if (currentSet === 5) {
         setIsRunning(false); // Stop the full match timer
       }
+    }
+  };
+
+  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(true);
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
+  const [loginError, setLoginError] = useState({ username: "", password: "" });
+
+  const handleLogin = () => {
+    let error = { username: "", password: "" };
+    if (username !== "parallellifestyle") {
+      error.username = "Username is not correct";
+    }
+    if (password !== "parallellifestyle1234") {
+      error.password = "Password is not correct";
+    }
+    setLoginError(error);
+
+    if (error.username === "" && error.password === "") {
+      setIsLoginDialogOpen(false);
+    }
+  };
+
+  const handleUsernameChange = (value: string) => {
+    setUsername(value);
+    if (value === "parallellifestyle") {
+      setLoginError((prev) => ({ ...prev, username: "" }));
+    }
+  };
+
+  const handlePasswordChange = (value: string) => {
+    setPassword(value);
+    if (value === "parallellifestyle1234") {
+      setLoginError((prev) => ({ ...prev, password: "" }));
     }
   };
 
@@ -484,7 +528,7 @@ export default function PadelScoreboard() {
             onClick={addSet}
             disabled={sets.length >= 5}
           >
-            <PlusIcon className="w-16 h-16 font-black mr-1 text-blue-500"/>
+            <PlusIcon className="w-16 h-16 font-black mr-1 text-blue-500" />
             Set
           </Button>
         </div>
@@ -504,7 +548,7 @@ export default function PadelScoreboard() {
               key={index}
               className="text-center text-white text-xl sm:text-3xl"
             >
-              {team2[`set${index + 1}`] ? team2[`set${index + 1}`] : "00"} 
+              {team2[`set${index + 1}`] ? team2[`set${index + 1}`] : "00"}
             </div>
           ))}
           <div className="text-center text-white text-xl sm:text-3xl">
@@ -520,7 +564,7 @@ export default function PadelScoreboard() {
             className={`!bg-zinc-900 !text-white text-sm font-bold w-full rounded-lg px-4 py-6 sm:text-base hover:scale-105`}
             onClick={handleAssignWinner}
           >
-             <Trophy className="w-8 h-8 mr-1 text-yellow-500 animate-pulse" />
+            <Trophy className="w-8 h-8 mr-1 text-yellow-500 animate-pulse" />
             Winner
           </Button>
         </div>
@@ -546,7 +590,12 @@ export default function PadelScoreboard() {
           <Button
             className={`!bg-[#ffffff] !text-blue-500 text-sm font-bold  w-full rounded-lg px-4 py-6 sm:text-base hover:scale-105`}
             onClick={completeSet}
-            disabled={isMatchWon || isSetWon || currentSet > 5 || (team1.game === 0 && team2.game === 0)}
+            disabled={
+              isMatchWon ||
+              isSetWon ||
+              currentSet > 5 ||
+              (team1.game === 0 && team2.game === 0)
+            }
           >
             Complete Set
           </Button>
@@ -637,6 +686,15 @@ export default function PadelScoreboard() {
           setTeam1Name={setTeam1Name}
           team2Name={team2Name}
           setTeam2Name={setTeam2Name}
+        />
+        <LoginDialog
+          isLoginDialogOpen={isLoginDialogOpen}
+          username={username}
+          setUsername={handleUsernameChange}
+          password={password}
+          setPassword={handlePasswordChange}
+          loginError={loginError}
+          handleLogin={handleLogin}
         />
       </div>
     </div>
