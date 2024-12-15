@@ -9,6 +9,7 @@ import {
 import { Trophy } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { WinnerDialogProps } from "@/app/Types";
+import Image from "next/image";
 
 const WinnerDialog: React.FC<WinnerDialogProps> = ({
   isOpen,
@@ -23,8 +24,21 @@ const WinnerDialog: React.FC<WinnerDialogProps> = ({
       <DialogContent className="bg-zinc-900 text-zinc-100 border-zinc-700 border">
         <DialogHeader>
           <DialogTitle className="text-3xl font-bold text-white flex items-center justify-center mb-6">
-            <Trophy className="w-8 h-8 mr-3 text-yellow-500 animate-pulse" />
-            {popupMessage}
+            <div className="flex flex-col-reverse items-center gap-5 mt-4">
+            <div className="w-[80%]">
+              <Image
+                className=""
+                alt="logo"
+                src={"/logo.png"}
+                height={200}
+                width={1000}
+              />
+            </div>
+          <div className="flex gap-2">
+          <Trophy className="w-8 h-8 mr-3 text-yellow-500 animate-pulse" />
+          {popupMessage}
+          </div>
+            </div>
           </DialogTitle>
         </DialogHeader>
         {winningTeamStats ? (
@@ -76,7 +90,6 @@ const WinnerDialog: React.FC<WinnerDialogProps> = ({
                   {winningTeamStats.score}
                 </p>
               </div>
-             
             </div>
           </div>
         ) : (

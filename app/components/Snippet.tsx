@@ -39,7 +39,7 @@ export const useScoreHistory = (
     setTeam2({ set1: 0, set2: 0, set3: 0, game: 0, score: "00" });
     setHistory([]);
     setFuture([]);
-    setSetTimeDurations([0, 0, 0, 0, 0]); // Reset set durations
+    setSetTimeDurations([0, 0, 0]); // Reset set durations
   };
 
   return { undo, redo, resetScores };
