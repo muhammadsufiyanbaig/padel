@@ -557,7 +557,7 @@ export default function PadelScoreboard() {
             gridTemplateColumns: `repeat(${gridCol}, 1fr)`,
           }}
         >
-          <div className="text-[#9a9e95] text-lg font-extrabold sm:text-3xl  ">
+          <div className="text-white text-lg font-extrabold sm:text-3xl  ">
             {team2Name}
           </div>
           {sets.map((set, index) => (
