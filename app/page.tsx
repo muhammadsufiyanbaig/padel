@@ -535,13 +535,13 @@ export default function PadelScoreboard() {
             {team1.game}
           </div>
           <Button
-            className={`bg-[#3498db] text-white text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-3xl`}
+            className={`bg-yellow-500 text-white text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-3xl`}
             onClick={() => updateScore("team1")}
           >
             {team1.score}
           </Button>
           <Button
-            className={`!bg-[#ffffff] !text-blue-500 text-lg font-bold w-full rounded-lg px-3 py-6  hover:scale-105`}
+            className={`!bg-[#ffffff] !text-yellow-500 text-lg font-bold w-full rounded-lg px-3 py-6  hover:scale-105`}
             onClick={addSet}
             disabled={sets.length >= 5}
           >
@@ -572,7 +572,7 @@ export default function PadelScoreboard() {
             {team2.game}
           </div>
           <Button
-            className={`bg-[#454942] text-white text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-3xl`}
+            className={`bg-yellow-500 text-white text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-3xl`}
             onClick={() => updateScore("team2")}
           >
             {team2.score}
