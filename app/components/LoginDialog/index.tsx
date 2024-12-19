@@ -36,10 +36,17 @@ const LoginDialog: React.FC<LoginDialogProps> = ({
     }
   };
 
+  const handleKeyPress = (e: React.KeyboardEvent<HTMLDivElement>) => {
+    if (e.key === "Enter") {
+      handleLogin();
+    }
+  };
+
   return (
     <Dialog open={isLoginDialogOpen}>
-      <DialogContent className="bg-zinc-900 text-zinc-100 border-zinc-700 border">
-        <span className="inline-block bg-zinc-900 h-4 w-5 absolute z-10 right-4 top-4"></span>
+      <DialogContent className="bg-black text-zinc-100 border-zinc-700 border">
+        <div onKeyDown={handleKeyPress}>
+        <span className="inline-block bg-black h-4 w-5 absolute z-10 right-4 top-4"></span>
         <DialogHeader>
           <DialogTitle className="text-3xl font-bold text-white flex items-center justify-center mb-6">
             Login
@@ -87,6 +94,7 @@ const LoginDialog: React.FC<LoginDialogProps> = ({
           >
             Login
           </Button>
+        </div>
         </div>
       </DialogContent>
     </Dialog>

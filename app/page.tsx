@@ -11,6 +11,7 @@ import {
   Trophy,
   ChartBarBig,
   PlusIcon,
+  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -451,7 +452,7 @@ export default function PadelScoreboard() {
   };
 
   return (
-    <div className="min-h-screen flex  items-center bg-zinc-800 p-6">
+    <div className="min-h-screen flex  items-center bg-black p-6">
       <div className="w-full max-w-6xl mx-auto space-y-6">
         <div className="space-y-4">
           <Image
@@ -463,7 +464,7 @@ export default function PadelScoreboard() {
           />
         </div>
         {/* Full Match Timer */}
-        <div className="bg-zinc-900/50 rounded-lg p-4 text-4xl font-mono text-white text-center sm:text-2xl">
+        <div className="bg-zinc-900/50 rounded-lg p-4 text-4xl font-mono text-white text-center sm:text-6xl">
           {formatTime(fullMatchTime)}
         </div>
         <div className="flex justify-center gap-x-4 pb-4">
@@ -494,18 +495,18 @@ export default function PadelScoreboard() {
         >
           <div></div>
           {sets.map((_, index) => (
-            <div key={index} className="rounded-lg py-4" 
+            <div key={index} className="rounded-lg border-2 py-4" 
               style={{
                 backgroundColor: "#2c3e5040",
               }}
             >SET {index + 1}</div>
           ))}
-          <div className="rounded-lg py-4" 
+          <div className="rounded-lg py-4 border-2 " 
             style={{
               backgroundColor: "#2c3e5040",
             }}
           >GAME</div>
-          <div className="rounded-lg py-4" 
+          <div className="rounded-lg py-4 border-2 " 
             style={{
               backgroundColor: "#2c3e5040",
             }}
@@ -515,13 +516,13 @@ export default function PadelScoreboard() {
 
         {/* Team 1 */}
         <div
-          className={`grid gap-4 items-center`}
+          className={`grid gap-4 items-center `}
           style={{
             gridTemplateColumns: `repeat(${gridCol}, 1fr)`,
           }}
         >
           <div className="text-white text-lg font-extrabold sm:text-3xl ">
-            {team1Name}
+            {team1Name.toUpperCase()}
           </div>
           {sets.map((set, index) => (
             <div
@@ -541,11 +542,11 @@ export default function PadelScoreboard() {
             {team1.score}
           </Button>
           <Button
-            className={`!bg-[#ffffff] !text-yellow-500 text-lg font-bold w-full rounded-lg px-3 py-6  hover:scale-105`}
+            className={`!bg-[#ffffff] !text-yellow-500 text-lg font-bold w-full h-full  rounded-lg p-4  hover:scale-105`}
             onClick={addSet}
             disabled={sets.length >= 5}
           >
-            <PlusIcon className="w-16 h-16 font-black mr-1 text-blue-500" />
+            <PlusIcon className="w-16 h-16 font-black mr-1 text-yellow-500" />
             Set
           </Button>
         </div>
@@ -558,7 +559,7 @@ export default function PadelScoreboard() {
           }}
         >
           <div className="text-white text-lg font-extrabold sm:text-3xl  ">
-            {team2Name}
+            {team2Name.toUpperCase()}
           </div>
           {sets.map((set, index) => (
             <div
@@ -578,11 +579,17 @@ export default function PadelScoreboard() {
             {team2.score}
           </Button>
           <Button
-            className={`!bg-zinc-900 !text-white text-sm font-bold w-full rounded-lg px-4 py-6 sm:text-base hover:scale-105`}
-            onClick={handleAssignWinner}
+            className={`!bg-[#ffffff] !text-yellow-500 text-2xl font-bold  w-full  h-full rounded-lg p-4 sm:text-lg`}
+            onClick={completeSet}
+            disabled={
+              isMatchWon ||
+              isSetWon ||
+              currentSet > 5 ||
+              (team1.game === 0 && team2.game === 0)
+            }
           >
-            <Trophy className="w-8 h-8 mr-1 text-yellow-500 animate-pulse" />
-            Winner
+            <Check className="w-16 h-16 font-black mr-1 text-yellow-500"/>
+           Set
           </Button>
         </div>
         {/* Duration */}
@@ -593,7 +600,7 @@ export default function PadelScoreboard() {
           }}
         >
           <div className="text-[#91989c] text-sm font-extrabold sm:text-3xl  ">
-            Duration
+            DURATION
           </div>
           {setTimeDurations.map((duration, index) => (
             <div
@@ -604,20 +611,14 @@ export default function PadelScoreboard() {
             </div>
           ))}
           <div></div>
-          <Button
-            className={`!bg-[#ffffff] !text-blue-500 text-sm font-bold  w-full rounded-lg px-4 py-6 sm:text-base hover:scale-105`}
-            onClick={completeSet}
-            disabled={
-              isMatchWon ||
-              isSetWon ||
-              currentSet > 5 ||
-              (team1.game === 0 && team2.game === 0)
-            }
-          >
-            Complete Set
-          </Button>
-        </div>
 
+        </div>
+        <Button
+            className={`!bg-zinc-900 !text-white text-sm font-bold w-10 h-10 rounded-full px-8 py-8 fixed bottom-4 right-4 sm:text-base hover:scale-105`}
+            onClick={handleAssignWinner}
+          >
+            <Trophy className="w-28 text-5xl h-28 text-yellow-500 animate-pulse scale-150" />
+          </Button>
         {/* Controls */}
         <div className="flex justify-center gap-4 flex-wrap">
           {isMatchWon ? (
