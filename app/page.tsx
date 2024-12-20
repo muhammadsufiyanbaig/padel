@@ -490,7 +490,7 @@ export default function PadelScoreboard() {
           />
         </div>
         {/* Headers */}
-        <table className="w-full text-sm text-gray-300 text-center sm:text-xl border-collapse rounded-lg overflow-hidden">
+        <table className="w-full text-sm text-gray-300 text-center sm:text-xl border-collapse overflow-hidden">
           <thead>
             <tr>
               <th className=""></th>
@@ -521,23 +521,23 @@ export default function PadelScoreboard() {
           <tbody>
             {/* Team 1 */}
             <tr>
-              <td className="border bg-[#2c3e5040] border-gray-600 text-white text-lg font-extrabold sm:text-3xl">
+              <td className="border bg-[#fff] border-gray-600 text-gray-500 text-lg font-extrabold sm:text-3xl">
                 {team1Name.toUpperCase()}
               </td>
               {sets.map((set, index) => (
                 <td
                   key={index}
-                  className="border  bg-[#2c3e5040] border-gray-600 text-center text-white text-xl sm:text-3xl"
+                  className="border  bg-[#fff] border-gray-600 text-center font-bold text-gray-500 text-xl sm:text-4xl"
                 >
                   {team1[`set${index + 1}`] ? team1[`set${index + 1}`] : "00"}
                 </td>
               ))}
-              <td className="border  bg-[#2c3e5040] border-gray-600 text-center text-white text-xl sm:text-3xl">
+              <td className="border  bg-[#fff] border-gray-600 text-center font-bold text-gray-500 text-xl sm:text-4xl">
                 {team1.game}
               </td>
               <td className="">
                 <Button
-                  className="bg-yellow-500 text-white text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-3xl"
+                  className="!bg-[#fff] !text-gray-500 text-3xl font-bold w-full h-full rounded-lg p-4 sm:text-4xl"
                   onClick={() => updateScore("team1")}
                 >
                   {team1.score}
@@ -545,34 +545,34 @@ export default function PadelScoreboard() {
               </td>
               <td className="">
                 <Button
-                  className="!bg-[#ffffff] !text-yellow-500 text-lg font-bold w-full h-full rounded-lg py-4 "
+                  className="!bg-white !text-gray-500 text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-xl "
                   onClick={addSet}
                   disabled={sets.length >= 5}
                 >
-                  <PlusIcon className="w-16 h-16 font-black mr-1 text-yellow-500  hover:scale-105" />{" "}
-                  Set
+                  {/* <PlusIcon className="!w-5 !h-5 font-black mr-1 text-gray-500" />{" "} */}
+                  Add Set
                 </Button>
               </td>
             </tr>
             {/* Team 2 */}
             <tr>
-              <td className="border  bg-[#2c3e5040] border-gray-600 text-white text-lg font-extrabold sm:text-3xl">
+              <td className="border  bg-[#808080] border-gray-600 text-zinc-800 text-lg font-extrabold sm:text-3xl">
                 {team2Name.toUpperCase()}
               </td>
               {sets.map((set, index) => (
                 <td
                   key={index}
-                  className="border  bg-[#2c3e5040] border-gray-600 text-center text-white text-xl sm:text-3xl"
+                  className="border  bg-[#808080] border-gray-600 font-bold text-center text-zinc-800 text-xl sm:text-4xl"
                 >
                   {team2[`set${index + 1}`] ? team2[`set${index + 1}`] : "00"}
                 </td>
               ))}
-              <td className="border  bg-[#2c3e5040] border-gray-600 text-center text-white text-xl sm:text-3xl">
+              <td className="border  bg-[#808080] border-gray-600 text-center font-bold text-zinc-800 text-xl sm:text-4xl">
                 {team2.game}
               </td>
               <td className="">
                 <Button
-                  className="bg-yellow-500 text-white text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-3xl"
+                  className="!bg-[#808080] !text-zinc-800 text-3xl font-bold w-full h-full rounded-lg p-4 sm:text-4xl"
                   onClick={() => updateScore("team2")}
                 >
                   {team2.score}
@@ -580,7 +580,7 @@ export default function PadelScoreboard() {
               </td>
               <td className="">
                 <Button
-                  className="!bg-[#ffffff] !text-yellow-500 text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-lg"
+                  className="!bg-white !text-gray-500 text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-xl"
                   onClick={completeSet}
                   disabled={
                     isMatchWon ||
@@ -589,20 +589,20 @@ export default function PadelScoreboard() {
                     (team1.game === 0 && team2.game === 0)
                   }
                 >
-                  <Check className="w-16 h-16 font-black mr-1 text-yellow-500" />{" "}
-                  Set
+                  {/* <Check className="!w-5 !h-5 font-black mr-1 text-gray-500" />{" "} */}
+                 Complete
                 </Button>
               </td>
             </tr>
             {/* Duration */}
             <tr>
-              <td className="border  bg-[#2c3e5040] border-gray-600 text-[#91989c] text-sm font-extrabold sm:text-3xl">
+              <td className="border  bg-[#6c788540] border-gray-600 text-blue-500 text-sm font-extrabold sm:text-3xl">
                 DURATION
               </td>
               {setTimeDurations.map((duration, index) => (
                 <td
                   key={index}
-                  className="border  bg-[#2c3e5040] border-gray-600 text-center text-white text-lg sm:text-3xl"
+                  className="border  bg-[#6c788540] border-gray-600 text-center text-blue-500 text-lg sm:text-3xl"
                 >
                   {formatTime(duration)}
                 </td>
