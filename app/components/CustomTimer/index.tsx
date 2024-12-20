@@ -24,7 +24,7 @@ const CustomTimer: React.FC<CustomTimerProps> = ({
         <Timer className="w-6 h-6 text-gray-400" />
       </Button>
     </DialogTrigger>
-    <DialogContent className="bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-6 max-w-md mx-auto sm:max-w-xs">
+    <DialogContent className="bg-black border border-zinc-700 rounded-lg shadow-lg p-6 max-w-md mx-auto sm:max-w-xs">
       <DialogHeader className="mb-4 text-white">
         <DialogTitle className="text-lg font-semibold text-gray-100">
           Set Custom Timer
@@ -37,7 +37,7 @@ const CustomTimer: React.FC<CustomTimerProps> = ({
             placeholder="MM"
             value={customMinutes}
             onChange={(e) => setCustomMinutes(e.target.value)}
-            className="p-2 rounded-md w-16 h-16 focus:ring text-gray-100 bg-zinc-800  border-zinc-700"
+            className="p-2 rounded-md w-16 h-16 focus:ring text-gray-100 bg-zinc-900  border-zinc-700"
           />
           <p className="text-gray-100 text-2xl">:</p>
           <Input
@@ -45,7 +45,7 @@ const CustomTimer: React.FC<CustomTimerProps> = ({
             placeholder="SS"
             value={customSeconds}
             onChange={(e) => setCustomSeconds(e.target.value)}
-            className="px-2 rounded-md w-16 h-16 focus:ring text-gray-100 bg-zinc-800 border border-zinc-700"
+            className="px-2 rounded-md w-16 h-16 focus:ring text-gray-100 bg-zinc-900 border border-zinc-700"
           />
         </div>
         <Button

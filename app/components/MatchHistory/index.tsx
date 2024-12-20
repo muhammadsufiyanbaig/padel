@@ -8,7 +8,7 @@ import { MatchHistoryProps } from "@/app/Types";
 const MatchHistory = ({ isStatsDialogOpen, setIsStatsDialogOpen, allPreviousStats, downloadCSV, clearMatchHistory }: MatchHistoryProps) => {
   return (
     <Dialog open={isStatsDialogOpen} onOpenChange={setIsStatsDialogOpen}>
-      <DialogContent className="bg-zinc-900 border border-zinc-700 rounded-xl w-full max-w-7xl">
+      <DialogContent className="bg-black border border-zinc-700 rounded-xl w-full max-w-7xl">
         <DialogHeader className="mb-6">
           <DialogTitle className="text-3xl font-bold text-blue-400 text-center">
             Match History

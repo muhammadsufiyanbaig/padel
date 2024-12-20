@@ -28,7 +28,7 @@ const WinnerSelectionDialog: React.FC<WinnerSelectionDialogProps> = ({
 
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[425px] bg-zinc-900 text-zinc-100 border-zinc-700 border rounded-lg shadow-xl">
+      <DialogContent className="sm:max-w-[425px] bg-black text-zinc-100 border-zinc-700 border rounded-lg shadow-xl">
         <DialogHeader>
           <DialogTitle className="text-3xl font-bold text-white flex items-center justify-center mb-6">
             <Trophy className="w-8 h-8 mr-3 text-yellow-500 animate-pulse" />
@@ -47,7 +47,7 @@ const WinnerSelectionDialog: React.FC<WinnerSelectionDialogProps> = ({
                 className={`flex items-center space-x-3 p-3 rounded-lg transition-all duration-200 ${
                   selectedWinner === option.toLowerCase().replace(" ", "")
                     ? "bg-blue-500/20 border border-blue-500"
-                    : "bg-zinc-800 border border-zinc-700 hover:border-blue-500/50"
+                    : "bg-zinc-900 border border-zinc-700 hover:border-blue-500/50"
                 }`}
               >
                 <RadioGroupItem

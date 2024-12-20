@@ -21,7 +21,7 @@ const WinnerDialog: React.FC<WinnerDialogProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-zinc-900 text-zinc-100 border-zinc-700 border">
+      <DialogContent className="bg-black text-zinc-100 border-zinc-700 border">
         <DialogHeader>
           <DialogTitle className="text-3xl font-bold text-white flex items-center justify-center mb-6">
             <div className="flex flex-col-reverse items-center gap-5 mt-4">
@@ -44,26 +44,26 @@ const WinnerDialog: React.FC<WinnerDialogProps> = ({
         {winningTeamStats ? (
           <div className="mt-4">
             <div className="grid grid-cols-3 gap-4 text-center">
-              <div className="bg-zinc-800 p-4 rounded-lg">
+              <div className="bg-zinc-900 p-4 rounded-lg">
                 <h3 className="text-sm font-medium text-zinc-400">Set1</h3>
                 <p className="text-2xl font-bold text-blue-400">
                   {winningTeamStats.set1}
                 </p>
               </div>
-              <div className="bg-zinc-800 p-4 rounded-lg">
+              <div className="bg-zinc-900 p-4 rounded-lg">
                 <h3 className="text-sm font-medium text-zinc-400">Set2</h3>
                 <p className="text-2xl font-bold text-blue-400">
                   {winningTeamStats.set2}
                 </p>
               </div>
-              <div className="bg-zinc-800 p-4 rounded-lg">
+              <div className="bg-zinc-900 p-4 rounded-lg">
                 <h3 className="text-sm font-medium text-zinc-400">Set3</h3>
                 <p className="text-2xl font-bold text-blue-400">
                   {winningTeamStats.set3}
                 </p>
               </div>
               {winningTeamStats.set4 !== undefined && (
-                <div className="bg-zinc-800 p-4 rounded-lg">
+                <div className="bg-zinc-900 p-4 rounded-lg">
                   <h3 className="text-sm font-medium text-zinc-400">Set4</h3>
                   <p className="text-2xl font-bold text-blue-400">
                     {winningTeamStats.set4}
@@ -71,20 +71,20 @@ const WinnerDialog: React.FC<WinnerDialogProps> = ({
                 </div>
               )}
               {winningTeamStats.set5 !== undefined && (
-                <div className="bg-zinc-800 p-4 rounded-lg">
+                <div className="bg-zinc-900 p-4 rounded-lg">
                   <h3 className="text-sm font-medium text-zinc-400">Set5</h3>
                   <p className="text-2xl font-bold text-blue-400">
                     {winningTeamStats.set5}
                   </p>
                 </div>
               )}
-              <div className="bg-zinc-800 p-4 rounded-lg">
+              <div className="bg-zinc-900 p-4 rounded-lg">
                 <h3 className="text-sm font-medium text-zinc-400">Games</h3>
                 <p className="text-2xl font-bold text-blue-400">
                   {winningTeamStats.game}
                 </p>
               </div>
-              <div className="bg-zinc-800 p-4 rounded-lg">
+              <div className="bg-zinc-900 p-4 rounded-lg">
                 <h3 className="text-sm font-medium text-zinc-400">Score</h3>
                 <p className="text-2xl font-bold text-blue-400">
                   {winningTeamStats.score}

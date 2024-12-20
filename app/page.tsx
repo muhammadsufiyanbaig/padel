@@ -85,7 +85,7 @@ export default function PadelScoreboard() {
     setTeam2,
     setHistory,
     setFuture,
-    setSetTimeDurations,
+    setSetTimeDurations
   );
 
   const addSet = () => {
@@ -175,8 +175,12 @@ export default function PadelScoreboard() {
     setIsRunning(false);
     setTime(0);
     setFullMatchTime(0); // Reset full match time as well
-    setSets([{ team1: 0, team2: 0 }, { team1: 0, team2: 0 }, { team1: 0, team2: 0 }]);
-    setGridCol(7)
+    setSets([
+      { team1: 0, team2: 0 },
+      { team1: 0, team2: 0 },
+      { team1: 0, team2: 0 },
+    ]);
+    setGridCol(7);
   };
 
   const saveMatchStats = async (
@@ -486,139 +490,134 @@ export default function PadelScoreboard() {
           />
         </div>
         {/* Headers */}
-  
-        <div
-          className={`grid gap-4 text-sm text-gray-300 text-center sm:text-xl`}
-          style={{
-            gridTemplateColumns: `repeat(${gridCol}, 1fr)`,
-          }}
-        >
-          <div></div>
-          {sets.map((_, index) => (
-            <div key={index} className="rounded-lg border-2 py-4" 
-              style={{
-                backgroundColor: "#2c3e5040",
-              }}
-            >SET {index + 1}</div>
-          ))}
-          <div className="rounded-lg py-4 border-2 " 
-            style={{
-              backgroundColor: "#2c3e5040",
-            }}
-          >GAME</div>
-          <div className="rounded-lg py-4 border-2 " 
-            style={{
-              backgroundColor: "#2c3e5040",
-            }}
-          >SCORE</div>
-          <div></div>
-        </div>
+        <table className="w-full text-sm text-gray-300 text-center sm:text-xl border-collapse rounded-lg overflow-hidden">
+          <thead>
+            <tr>
+              <th className=""></th>
+              {sets.map((_, index) => (
+                <th
+                  key={index}
+                  className="border  border-gray-600 py-4"
+                  style={{ backgroundColor: "#2c3e5040" }}
+                >
+                  SET {index + 1}
+                </th>
+              ))}
+              <th
+                className="border border-gray-600 py-4"
+                style={{ backgroundColor: "#2c3e5040" }}
+              >
+                GAME
+              </th>
+              <th
+                className="border border-gray-600 py-4"
+                style={{ backgroundColor: "#2c3e5040" }}
+              >
+                SCORE
+              </th>
+              <th className=""></th>
+            </tr>
+          </thead>
+          <tbody>
+            {/* Team 1 */}
+            <tr>
+              <td className="border bg-[#2c3e5040] border-gray-600 text-white text-lg font-extrabold sm:text-3xl">
+                {team1Name.toUpperCase()}
+              </td>
+              {sets.map((set, index) => (
+                <td
+                  key={index}
+                  className="border  bg-[#2c3e5040] border-gray-600 text-center text-white text-xl sm:text-3xl"
+                >
+                  {team1[`set${index + 1}`] ? team1[`set${index + 1}`] : "00"}
+                </td>
+              ))}
+              <td className="border  bg-[#2c3e5040] border-gray-600 text-center text-white text-xl sm:text-3xl">
+                {team1.game}
+              </td>
+              <td className="">
+                <Button
+                  className="bg-yellow-500 text-white text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-3xl"
+                  onClick={() => updateScore("team1")}
+                >
+                  {team1.score}
+                </Button>
+              </td>
+              <td className="">
+                <Button
+                  className="!bg-[#ffffff] !text-yellow-500 text-lg font-bold w-full h-full rounded-lg py-4 "
+                  onClick={addSet}
+                  disabled={sets.length >= 5}
+                >
+                  <PlusIcon className="w-16 h-16 font-black mr-1 text-yellow-500  hover:scale-105" />{" "}
+                  Set
+                </Button>
+              </td>
+            </tr>
+            {/* Team 2 */}
+            <tr>
+              <td className="border  bg-[#2c3e5040] border-gray-600 text-white text-lg font-extrabold sm:text-3xl">
+                {team2Name.toUpperCase()}
+              </td>
+              {sets.map((set, index) => (
+                <td
+                  key={index}
+                  className="border  bg-[#2c3e5040] border-gray-600 text-center text-white text-xl sm:text-3xl"
+                >
+                  {team2[`set${index + 1}`] ? team2[`set${index + 1}`] : "00"}
+                </td>
+              ))}
+              <td className="border  bg-[#2c3e5040] border-gray-600 text-center text-white text-xl sm:text-3xl">
+                {team2.game}
+              </td>
+              <td className="">
+                <Button
+                  className="bg-yellow-500 text-white text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-3xl"
+                  onClick={() => updateScore("team2")}
+                >
+                  {team2.score}
+                </Button>
+              </td>
+              <td className="">
+                <Button
+                  className="!bg-[#ffffff] !text-yellow-500 text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-lg"
+                  onClick={completeSet}
+                  disabled={
+                    isMatchWon ||
+                    isSetWon ||
+                    currentSet > 5 ||
+                    (team1.game === 0 && team2.game === 0)
+                  }
+                >
+                  <Check className="w-16 h-16 font-black mr-1 text-yellow-500" />{" "}
+                  Set
+                </Button>
+              </td>
+            </tr>
+            {/* Duration */}
+            <tr>
+              <td className="border  bg-[#2c3e5040] border-gray-600 text-[#91989c] text-sm font-extrabold sm:text-3xl">
+                DURATION
+              </td>
+              {setTimeDurations.map((duration, index) => (
+                <td
+                  key={index}
+                  className="border  bg-[#2c3e5040] border-gray-600 text-center text-white text-lg sm:text-3xl"
+                >
+                  {formatTime(duration)}
+                </td>
+              ))}
+              <td className=""></td>
+            </tr>
+          </tbody>
+        </table>
 
-        {/* Team 1 */}
-        <div
-          className={`grid gap-4 items-center `}
-          style={{
-            gridTemplateColumns: `repeat(${gridCol}, 1fr)`,
-          }}
-        >
-          <div className="text-white text-lg font-extrabold sm:text-3xl ">
-            {team1Name.toUpperCase()}
-          </div>
-          {sets.map((set, index) => (
-            <div
-              key={index}
-              className="text-center text-white text-xl sm:text-3xl"
-            >
-              {team1[`set${index + 1}`] ? team1[`set${index + 1}`] : "00"}
-            </div>
-          ))}
-          <div className="text-center text-white text-xl sm:text-3xl">
-            {team1.game}
-          </div>
-          <Button
-            className={`bg-yellow-500 text-white text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-3xl`}
-            onClick={() => updateScore("team1")}
-          >
-            {team1.score}
-          </Button>
-          <Button
-            className={`!bg-[#ffffff] !text-yellow-500 text-lg font-bold w-full h-full  rounded-lg p-4  hover:scale-105`}
-            onClick={addSet}
-            disabled={sets.length >= 5}
-          >
-            <PlusIcon className="w-16 h-16 font-black mr-1 text-yellow-500" />
-            Set
-          </Button>
-        </div>
-
-        {/* Team 2 */}
-        <div
-          className={`grid gap-4 items-center`}
-          style={{
-            gridTemplateColumns: `repeat(${gridCol}, 1fr)`,
-          }}
-        >
-          <div className="text-white text-lg font-extrabold sm:text-3xl  ">
-            {team2Name.toUpperCase()}
-          </div>
-          {sets.map((set, index) => (
-            <div
-              key={index}
-              className="text-center text-white text-xl sm:text-3xl"
-            >
-              {team2[`set${index + 1}`] ? team2[`set${index + 1}`] : "00"}
-            </div>
-          ))}
-          <div className="text-center text-white text-xl sm:text-3xl">
-            {team2.game}
-          </div>
-          <Button
-            className={`bg-yellow-500 text-white text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-3xl`}
-            onClick={() => updateScore("team2")}
-          >
-            {team2.score}
-          </Button>
-          <Button
-            className={`!bg-[#ffffff] !text-yellow-500 text-2xl font-bold  w-full  h-full rounded-lg p-4 sm:text-lg`}
-            onClick={completeSet}
-            disabled={
-              isMatchWon ||
-              isSetWon ||
-              currentSet > 5 ||
-              (team1.game === 0 && team2.game === 0)
-            }
-          >
-            <Check className="w-16 h-16 font-black mr-1 text-yellow-500"/>
-           Set
-          </Button>
-        </div>
-        {/* Duration */}
-        <div
-          className={`grid gap-4 items-center`}
-          style={{
-            gridTemplateColumns: `repeat(${gridCol}, 1fr)`,
-          }}
-        >
-          <div className="text-[#91989c] text-sm font-extrabold sm:text-3xl  ">
-            DURATION
-          </div>
-          {setTimeDurations.map((duration, index) => (
-            <div
-              key={index}
-              className="text-center text-white text-lg sm:text-3xl"
-            >
-              {formatTime(duration)}
-            </div>
-          ))}
-          <div></div>
-
-        </div>
         <Button
-            className={`!bg-zinc-900 !text-white text-sm font-bold w-10 h-10 rounded-full px-8 py-8 fixed bottom-4 right-4 sm:text-base hover:scale-105`}
-            onClick={handleAssignWinner}
-          >
-            <Trophy className="w-28 text-5xl h-28 text-yellow-500 animate-pulse scale-150" />
-          </Button>
+          className={`!bg-zinc-900 !text-white text-sm font-bold w-10 h-10 rounded-full px-8 py-8 fixed bottom-4 right-4 sm:text-base hover:scale-105`}
+          onClick={handleAssignWinner}
+        >
+          <Trophy className="w-28 text-5xl h-28 text-yellow-500 animate-pulse scale-150" />
+        </Button>
         {/* Controls */}
         <div className="flex justify-center gap-4 flex-wrap">
           {isMatchWon ? (

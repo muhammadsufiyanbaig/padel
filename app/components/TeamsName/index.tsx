@@ -14,7 +14,7 @@ const TeamsNameDialog: React.FC<TeamsNameDialogProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-zinc-900 border border-zinc-700 rounded-lg shadow-lg p-6 max-w-md mx-auto sm:max-w-xs">
+      <DialogContent className="bg-black border border-zinc-700 rounded-lg shadow-lg p-6 max-w-md mx-auto sm:max-w-xs">
         <DialogHeader className="mb-4">
           <DialogTitle className="text-lg font-semibold text-gray-100">
             Set Team Names
