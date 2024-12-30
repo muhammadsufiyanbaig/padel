@@ -192,24 +192,24 @@ export default function PadelScoreboard() {
       team1Set1: team1Stats.set1,
       team1Set2: team1Stats.set2,
       team1Set3: team1Stats.set3,
-      team1Set4: team1Stats.set4,
-      team1Set5: team1Stats.set5,
+      team1Set4: team1Stats.set4 || 0, // Provide default value
+      team1Set5: team1Stats.set5 || 0, // Provide default value
       team1Game: team1Stats.game,
       team1Score: team1Stats.score,
       team2Name: team2Name,
       team2Set1: team2Stats.set1,
       team2Set2: team2Stats.set2,
       team2Set3: team2Stats.set3,
-      team2Set4: team2Stats.set4,
-      team2Set5: team2Stats.set5,
+      team2Set4: team2Stats.set4 || 0, // Provide default value
+      team2Set5: team2Stats.set5 || 0, // Provide default value
       team2Game: team2Stats.game,
       team2Score: team2Stats.score,
       matchTime: formatTime(fullMatchTime),
-      set1Time: setTimeDurations[0] ? formatTime(setTimeDurations[0]) : null,
-      set2Time: setTimeDurations[1] ? formatTime(setTimeDurations[1]) : null,
-      set3Time: setTimeDurations[2] ? formatTime(setTimeDurations[2]) : null,
-      set4Time: setTimeDurations[3] ? formatTime(setTimeDurations[3]) : null,
-      set5Time: setTimeDurations[4] ? formatTime(setTimeDurations[4]) : null,
+      set1Time: setTimeDurations[0] ? formatTime(setTimeDurations[0]) : "00:00",
+      set2Time: setTimeDurations[1] ? formatTime(setTimeDurations[1]) : "00:00",
+      set3Time: setTimeDurations[2] ? formatTime(setTimeDurations[2]) : "00:00",
+      set4Time: setTimeDurations[3] ? formatTime(setTimeDurations[3]) : "00:00",
+      set5Time: setTimeDurations[4] ? formatTime(setTimeDurations[4]) : "00:00",
     };
 
     try {

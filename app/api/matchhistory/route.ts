@@ -19,6 +19,8 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
+    console.log("Request body:", body); // Log the request body
+
     const {
       team1Name,
       team1Set1,
@@ -43,6 +45,7 @@ export async function POST(req: NextRequest) {
       set4Time,
       set5Time,
     } = body;
+
     const result = await sql`
       INSERT INTO MatchDetails (
         Team1Name, Team1Set1, Team1Set2, Team1Set3, Team1Set4, Team1Set5, Team1Game, Team1Score,
@@ -53,9 +56,10 @@ export async function POST(req: NextRequest) {
         ${team2Name}, ${team2Set1}, ${team2Set2}, ${team2Set3}, ${team2Set4}, ${team2Set5}, ${team2Game}, ${team2Score},
         ${matchTime}, ${set1Time}, ${set2Time}, ${set3Time}, ${set4Time}, ${set5Time}
       );`;
-    return NextResponse.json(result[0], { status: 201 });
+
+    return NextResponse.json(result, { status: 201 });
   } catch (error) {
-    console.error("Error saving match history:", error);
+    console.error("Error saving match history:", error); // Log the error
     return NextResponse.json(
       { error: "Failed to save match history" },
       { status: 500 }
