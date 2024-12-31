@@ -10,8 +10,6 @@ import {
   UserPen,
   Trophy,
   ChartBarBig,
-  PlusIcon,
-  Check,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
@@ -24,8 +22,8 @@ import LoginDialog from "./components/LoginDialog";
 import { ScoreState, TeamScore } from "./Types";
 import { useScoreHistory } from "./components/Snippet";
 import axios from "axios";
-const SCORE_SEQUENCE = ["00", "15", "30", "40", "AD"];
 
+const SCORE_SEQUENCE = ["00", "15", "30", "40", "AD"];
 export default function PadelScoreboard() {
   const [time, setTime] = useState(0);
   const [isRunning, setIsRunning] = useState(false);
@@ -88,11 +86,20 @@ export default function PadelScoreboard() {
     setSetTimeDurations
   );
 
+
   const addSet = () => {
     if (sets.length < 5) {
       setSets((prevSets) => [...prevSets, { team1: 0, team2: 0 }]);
       setGridCol((prev) => prev + 1);
       setSetTimeDurations((prev) => [...prev, 0]);
+    }
+  };
+
+  const removeSet = () => {
+    if (sets.length > 3) {
+      setSets((prevSets) => prevSets.slice(0, -1));
+      setGridCol((prev) => prev - 1);
+      setSetTimeDurations((prev) => prev.slice(0, -1));
     }
   };
 
@@ -139,6 +146,21 @@ export default function PadelScoreboard() {
   useEffect(() => {
     console.log(`Timer: ${formatTime(fullMatchTime)}`);
   }, [fullMatchTime]);
+
+  useEffect(() => {
+    const handleOrientationChange = () => {
+      if (window.innerWidth < 768) {
+        alert("Please rotate your device to landscape orientation.");
+      }
+    };
+
+    handleOrientationChange(); // Initial check
+    window.addEventListener("resize", handleOrientationChange);
+
+    return () => {
+      window.removeEventListener("resize", handleOrientationChange);
+    };
+  }, []);
 
   const setCustomTimer = () => {
     const minutes = parseInt(customMinutes, 10);
@@ -219,15 +241,6 @@ export default function PadelScoreboard() {
       console.error("Failed to save match history:", error);
     }
   };
-
-  // const logMatchStats = (
-  //   team1Stats: ScoreState["team1"],
-  //   team2Stats: ScoreState["team2"]
-  // ) => {
-  //   console.log("Match Stats:");
-  //   console.log("Team 1:", team1Stats);
-  //   console.log("Team 2:", team2Stats);
-  // };
 
   const updateScore = useCallback(
     (team: "team1" | "team2") => {
@@ -515,6 +528,7 @@ export default function PadelScoreboard() {
                 SCORE
               </th>
               <th className=""></th>
+              <th className=""></th>
             </tr>
           </thead>
           <tbody>
@@ -548,8 +562,16 @@ export default function PadelScoreboard() {
                   onClick={addSet}
                   disabled={sets.length >= 5}
                 >
-                  {/* <PlusIcon className="!w-5 !h-5 font-black mr-1 text-gray-500" />{" "} */}
                   Add Set
+                </Button>
+              </td>
+              <td className="">
+                <Button
+                  className="!bg-white !text-gray-500 text-2xl font-bold w-full h-full rounded-lg p-4 sm:text-xl "
+                  onClick={removeSet}
+                  disabled={sets.length <= 3}
+                >
+                  Remove Set
                 </Button>
               </td>
             </tr>
@@ -589,7 +611,7 @@ export default function PadelScoreboard() {
                   }
                 >
                   {/* <Check className="!w-5 !h-5 font-black mr-1 text-gray-500" />{" "} */}
-                 Complete
+                  Complete
                 </Button>
               </td>
             </tr>
@@ -619,7 +641,7 @@ export default function PadelScoreboard() {
         </Button>
         {/* Controls */}
         <div className="flex justify-center gap-4 flex-wrap">
-          {isMatchWon ? (
+          {isMatchWon && (
             <Button
               variant="ghost"
               size="icon"
@@ -627,19 +649,18 @@ export default function PadelScoreboard() {
             >
               <Trophy className="w-6 h-6 text-gray-400" />
             </Button>
-          ) : (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                resetScores();
-                resetFullMatchTimer();
-              }}
-            >
-              <RefreshCcw className="w-6 h-6 text-gray-400" />
-            </Button>
           )}
-
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => {
+              // resetScores();
+              // resetFullMatchTimer();
+              window.location.reload();
+            }}
+          >
+            <RefreshCcw className="w-6 h-6 text-gray-400" />
+          </Button>
           <Button
             variant="ghost"
             size="icon"
@@ -703,7 +724,7 @@ export default function PadelScoreboard() {
           team2Name={team2Name}
           setTeam2Name={setTeam2Name}
         />
-        <LoginDialog
+        {/* <LoginDialog
           isLoginDialogOpen={isLoginDialogOpen}
           username={username}
           setUsername={handleUsernameChange}
@@ -711,7 +732,7 @@ export default function PadelScoreboard() {
           setPassword={handlePasswordChange}
           loginError={loginError}
           handleLogin={handleLogin}
-        />
+        /> */}
       </div>
     </div>
   );
