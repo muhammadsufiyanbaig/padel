@@ -617,13 +617,13 @@ export default function PadelScoreboard() {
             </tr>
             {/* Duration */}
             <tr>
-              <td className="border  bg-[#6c788540] border-gray-600 text-blue-500 text-sm font-extrabold sm:text-3xl">
+              <td className="border  bg-[#6c788540] border-gray-600  text-blue-500 text-sm font-bold sm:text-3xl">
                 DURATION
               </td>
               {setTimeDurations.map((duration, index) => (
                 <td
                   key={index}
-                  className="border  bg-[#6c788540] border-gray-600 text-center text-blue-500 text-lg sm:text-3xl"
+                  className="border  bg-[#6c788540] border-gray-600 text-center text-blue-500 text-base py-2 px-4 sm:text-3xl"
                 >
                   {formatTime(duration)}
                 </td>
@@ -632,7 +632,6 @@ export default function PadelScoreboard() {
             </tr>
           </tbody>
         </table>
-
         <Button
           className={`!bg-zinc-900 !text-white text-sm font-bold w-10 h-10 rounded-full px-8 py-8 fixed bottom-4 right-4 sm:text-base hover:scale-105`}
           onClick={handleAssignWinner}
