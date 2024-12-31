@@ -341,7 +341,6 @@ export default function PadelScoreboard() {
     const fetchMatchHistory = async () => {
       try {
         const response = await axios.get("/api/matchhistory");
-        console.log("Match History:", response.data);
         setAllPreviousStats(response.data);
       } catch (error) {
         console.error("Failed to fetch match history:", error);
