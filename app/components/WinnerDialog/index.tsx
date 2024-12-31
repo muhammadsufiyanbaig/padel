@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import {
   Dialog,
@@ -6,7 +8,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Trophy } from "lucide-react";
+import { Trophy } from 'lucide-react';
 import { Button } from "@/components/ui/button";
 import { WinnerDialogProps } from "@/app/Types";
 import Image from "next/image";
@@ -21,79 +23,45 @@ const WinnerDialog: React.FC<WinnerDialogProps> = ({
 }) => {
   return (
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
-      <DialogContent className="bg-black text-zinc-100 border-zinc-700 border">
+      <DialogContent className="sm:max-w-[90%] max-w-[95vw] bg-black text-zinc-100 border-zinc-700 border rounded-lg shadow-xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-3xl font-bold text-white flex items-center justify-center mb-6">
-            <div className="flex flex-col-reverse items-center gap-5 mt-4">
-            <div className="w-[80%]">
-              <Image
-                className=""
-                alt="logo"
-                src={"/logo.png"}
-                height={200}
-                width={1000}
-              />
-            </div>
-          <div className="flex gap-2">
-          <Trophy className="w-8 h-8 mr-3 text-yellow-500 animate-pulse" />
-          {popupMessage}
-          </div>
+          <DialogTitle className="text-xl sm:text-3xl font-bold text-white flex items-center justify-center mb-4 sm:mb-6">
+            <div className="flex flex-col-reverse items-center gap-3 sm:gap-5 mt-2 sm:mt-4">
+              <div className="w-[80%] sm:w-[60%]">
+                <Image
+                  className="w-full h-auto"
+                  alt="logo"
+                  src="/logo.png"
+                  width={1000}
+                  height={200}
+                  priority
+                />
+              </div>
+              <div className="flex gap-2 items-center">
+                <Trophy className="w-6 h-6 sm:w-8 sm:h-8 mr-2 sm:mr-3 text-yellow-500 animate-pulse" />
+                <span className="text-lg sm:text-2xl">{popupMessage}</span>
+              </div>
             </div>
           </DialogTitle>
         </DialogHeader>
         {winningTeamStats ? (
-          <div className="mt-4">
-            <div className="grid grid-cols-3 gap-4 text-center">
-              <div className="bg-zinc-900 p-4 rounded-lg">
-                <h3 className="text-sm font-medium text-zinc-400">Set1</h3>
-                <p className="text-2xl font-bold text-blue-400">
-                  {winningTeamStats.set1}
-                </p>
-              </div>
-              <div className="bg-zinc-900 p-4 rounded-lg">
-                <h3 className="text-sm font-medium text-zinc-400">Set2</h3>
-                <p className="text-2xl font-bold text-blue-400">
-                  {winningTeamStats.set2}
-                </p>
-              </div>
-              <div className="bg-zinc-900 p-4 rounded-lg">
-                <h3 className="text-sm font-medium text-zinc-400">Set3</h3>
-                <p className="text-2xl font-bold text-blue-400">
-                  {winningTeamStats.set3}
-                </p>
-              </div>
+          <div className="mt-2 sm:mt-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 sm:gap-4 text-center">
+              <StatsBox title="Set1" value={winningTeamStats.set1} />
+              <StatsBox title="Set2" value={winningTeamStats.set2} />
+              <StatsBox title="Set3" value={winningTeamStats.set3} />
               {winningTeamStats.set4 !== undefined && (
-                <div className="bg-zinc-900 p-4 rounded-lg">
-                  <h3 className="text-sm font-medium text-zinc-400">Set4</h3>
-                  <p className="text-2xl font-bold text-blue-400">
-                    {winningTeamStats.set4}
-                  </p>
-                </div>
+                <StatsBox title="Set4" value={winningTeamStats.set4} />
               )}
               {winningTeamStats.set5 !== undefined && (
-                <div className="bg-zinc-900 p-4 rounded-lg">
-                  <h3 className="text-sm font-medium text-zinc-400">Set5</h3>
-                  <p className="text-2xl font-bold text-blue-400">
-                    {winningTeamStats.set5}
-                  </p>
-                </div>
+                <StatsBox title="Set5" value={winningTeamStats.set5} />
               )}
-              <div className="bg-zinc-900 p-4 rounded-lg">
-                <h3 className="text-sm font-medium text-zinc-400">Games</h3>
-                <p className="text-2xl font-bold text-blue-400">
-                  {winningTeamStats.game}
-                </p>
-              </div>
-              <div className="bg-zinc-900 p-4 rounded-lg">
-                <h3 className="text-sm font-medium text-zinc-400">Score</h3>
-                <p className="text-2xl font-bold text-blue-400">
-                  {winningTeamStats.score}
-                </p>
-              </div>
+              <StatsBox title="Games" value={winningTeamStats.game} />
+              <StatsBox title="Score" value={winningTeamStats.score} />
             </div>
           </div>
         ) : (
-          <div className="mt-4 text-center text-lg font-semibold text-green-500">
+          <div className="mt-4 text-center text-base sm:text-lg font-semibold text-green-500">
             It's a Draw
           </div>
         )}
@@ -104,7 +72,7 @@ const WinnerDialog: React.FC<WinnerDialogProps> = ({
               resetScores();
               resetTimer();
             }}
-            className="w-full mt-4 bg-blue-500 hover:bg-blue-400 text-white"
+            className="w-full mt-4 bg-blue-500 hover:bg-blue-400 text-white text-sm sm:text-base py-2 sm:py-3 rounded-lg transition-all duration-200"
           >
             Close and Reset
           </Button>
@@ -114,4 +82,12 @@ const WinnerDialog: React.FC<WinnerDialogProps> = ({
   );
 };
 
+const StatsBox: React.FC<{ title: string; value: number | string }> = ({ title, value }) => (
+  <div className="bg-zinc-900 p-2 sm:p-4 rounded-lg">
+    <h3 className="text-xs sm:text-sm font-medium text-zinc-400">{title}</h3>
+    <p className="text-lg sm:text-2xl font-bold text-blue-400">{value}</p>
+  </div>
+);
+
 export default WinnerDialog;
+
